@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="383.0" prefWidth="288.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="indi.hjhk.taskmanager.gui.SettingControl">
+   <children>
+      <AnchorPane prefHeight="42.0" prefWidth="288.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="提示间隔" />
+            <TextField fx:id="txtAlertInterval" layoutX="80.0" layoutY="10.0" prefHeight="23.0" prefWidth="127.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="60.0" />
+            <Label layoutX="243.0" layoutY="14.0" text="分钟" AnchorPane.rightAnchor="20.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="42.0" prefWidth="288.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="连续使用提示阈值" />
+            <TextField fx:id="txtActiveThreshold" layoutX="80.0" layoutY="10.0" prefHeight="23.0" prefWidth="127.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="60.0" />
+            <Label layoutX="243.0" layoutY="14.0" text="分钟" AnchorPane.rightAnchor="20.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="42.0" prefWidth="288.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="离开计时阈值" />
+            <TextField fx:id="txtLeaveThreshold" layoutX="80.0" layoutY="10.0" prefHeight="23.0" prefWidth="127.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="60.0" />
+            <Label layoutX="243.0" layoutY="14.0" text="分钟" AnchorPane.rightAnchor="20.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="10.0" layoutY="52.0" prefHeight="42.0" prefWidth="288.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="提示暂停时长" />
+            <TextField fx:id="txtPauseTime" layoutX="80.0" layoutY="10.0" prefHeight="23.0" prefWidth="127.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="60.0" />
+            <Label layoutX="243.0" layoutY="14.0" text="分钟" AnchorPane.rightAnchor="20.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="42.0" prefWidth="288.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="鼠标活动误差" />
+            <TextField fx:id="txtCursorDiff" layoutX="80.0" layoutY="10.0" prefHeight="23.0" prefWidth="127.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="60.0" />
+            <Label layoutX="243.0" layoutY="14.0" text="像素点" AnchorPane.rightAnchor="20.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="10.0" layoutY="52.0" prefHeight="42.0" prefWidth="288.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="任务临近★" />
+            <TextField fx:id="txtLevel1Threshold" layoutX="80.0" layoutY="10.0" prefHeight="23.0" prefWidth="127.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="60.0" />
+            <Label layoutX="243.0" layoutY="14.0" text="天" AnchorPane.rightAnchor="20.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="10.0" layoutY="94.0" prefHeight="42.0" prefWidth="288.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="任务临近★★" />
+            <TextField fx:id="txtLevel2Threshold" layoutX="80.0" layoutY="10.0" prefHeight="23.0" prefWidth="127.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="60.0" />
+            <Label layoutX="243.0" layoutY="14.0" text="天" AnchorPane.rightAnchor="20.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="10.0" layoutY="136.0" prefHeight="42.0" prefWidth="288.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="任务临近★★★" />
+            <TextField fx:id="txtLevel3Threshold" layoutX="80.0" layoutY="10.0" prefHeight="23.0" prefWidth="127.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="60.0" />
+            <Label layoutX="243.0" layoutY="14.0" text="天" AnchorPane.rightAnchor="20.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane prefHeight="39.0" prefWidth="288.0">
+         <children>
+            <Button layoutX="61.0" layoutY="8.0" mnemonicParsing="false" onAction="#btnConfirm_clicked" text="  确定  " AnchorPane.leftAnchor="60.0" />
+            <Button layoutX="168.0" layoutY="8.0" mnemonicParsing="false" onAction="#btnCancel_clicked" text="  取消  " AnchorPane.rightAnchor="60.0" />
+         </children>
+      </AnchorPane>
+   </children>
+</VBox>
