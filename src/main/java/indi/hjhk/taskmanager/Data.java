@@ -2,8 +2,14 @@ package indi.hjhk.taskmanager;
 
 import indi.hjhk.global.GlobalConfig;
 import indi.hjhk.taskmanager.gui.MainGUI;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.time.Duration;
@@ -65,14 +71,9 @@ public class Data {
             try {
                 ArrayList<Task> tasks = new ArrayList<>();
                 ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(fileName));
-                Object object = objectInputStream.readObject();
-                if (object instanceof List<?> list){
-                    for (Object obj : list){
-                        if (obj instanceof Task task){
-                            tasks.add(task);
-                        }
-                    }
-                }
+                int taskSize = objectInputStream.readInt();
+                for (int i=0; i<taskSize; i++)
+                    tasks.add((Task) objectInputStream.readObject());
                 objectInputStream.close();
                 return tasks;
             } catch (IOException | ClassNotFoundException e) {
@@ -80,10 +81,27 @@ public class Data {
             }
         }
 
+        public static void addTask(Task newTask){
+            taskList.add(newTask);
+            writeTasksToFile(taskFileName);
+        }
+
+        public static void updateTask(int index, Task newTask){
+            taskList.set(index, newTask);
+            writeTasksToFile(taskFileName);
+        }
+
+        public static void removeTask(int index){
+            taskList.remove(index);
+            writeTasksToFile(taskFileName);
+        }
+
         public static void writeTasksToFile(String fileName){
             try{
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(fileName));
-                objectOutputStream.writeObject(taskList);
+                objectOutputStream.writeInt(taskList.size());
+                for (Task task : taskList)
+                    objectOutputStream.writeObject(task);
                 objectOutputStream.close();
             } catch (IOException ignored) {
             }
@@ -110,6 +128,7 @@ public class Data {
         public static EmergeTaskList getEmergeTaskList(LocalDateTime curTime){
             EmergeTaskList emergeTaskList = new EmergeTaskList();
             for (Task task : taskList){
+                if (task.isDone()) continue;
                 LocalDateTime expiredDate = task.getExpireDate();
                 if (expiredDate.isBefore(curTime)){
                     emergeTaskList.exceedTasks.add(task);
@@ -196,6 +215,14 @@ public class Data {
 
         public static long getPauseMinutesLeft(LocalDateTime curTime){
             return Config.PAUSE_LENGTH - Duration.between(pauseStart, curTime).toMinutes();
+        }
+
+        public static void setAlertAlwaysOnTop(javafx.scene.control.Alert alert){
+            ((Stage) alert.getDialogPane().getScene().getWindow()).setAlwaysOnTop(true);
+        }
+
+        public static void setAlertConcurrent(javafx.scene.control.Alert alert){
+            ((Stage) alert.getDialogPane().getScene().getWindow()).initModality(Modality.WINDOW_MODAL);
         }
 
         public static void closeAlert(){

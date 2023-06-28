@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="indi.hjhk.taskmanager.gui.MainControl">
+<BorderPane xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="indi.hjhk.taskmanager.gui.MainControl">
    <center>
       <ListView fx:id="lstTasks" onMouseClicked="#lstTask_mouseClicked" prefHeight="302.0" prefWidth="392.0">
          <BorderPane.margin>
@@ -39,6 +39,7 @@
                             <Menu mnemonicParsing="false" text="主菜单">
                               <items>
                                 <MenuItem mnemonicParsing="false" onAction="#menuSetting_selected" text="设置" />
+                                    <MenuItem mnemonicParsing="false" onAction="#menuNewTask_clicked" text="新任务" />
                               </items>
                             </Menu>
                           </menus>

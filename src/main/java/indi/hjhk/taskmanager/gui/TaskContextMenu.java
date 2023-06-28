@@ -6,6 +6,7 @@ import javafx.scene.control.MenuItem;
 
 public class TaskContextMenu extends ContextMenu {
     private static TaskContextMenu INSTANCE = null;
+    private static MainGUI mainGUI;
 
     public MenuItem menuItemFinish;
     public MenuItem menuItemEdit;
@@ -20,11 +21,17 @@ public class TaskContextMenu extends ContextMenu {
         itemList.add(menuItemFinish);
         itemList.add(menuItemEdit);
         itemList.add(menuItemDelete);
+
+        menuItemFinish.setOnAction(actionEvent -> mainGUI.finishSelectedTask());
     }
 
     public static TaskContextMenu getInstance(){
         if (INSTANCE == null)
             INSTANCE = new TaskContextMenu();
         return INSTANCE;
+    }
+
+    public static void setMainGUI(MainGUI mainGUI){
+        TaskContextMenu.mainGUI = mainGUI;
     }
 }

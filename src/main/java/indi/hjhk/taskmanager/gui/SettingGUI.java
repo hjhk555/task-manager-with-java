@@ -17,7 +17,6 @@ public class SettingGUI {
     public void start(MainGUI mainGUI) throws IOException {
         this.mainGUI = mainGUI;
         Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(mainGUI.mainScene.getWindow());
 
         FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("setting_view.fxml"));

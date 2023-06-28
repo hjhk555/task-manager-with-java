@@ -8,9 +8,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 
-import java.time.LocalDateTime;
-import java.util.function.UnaryOperator;
-
 public class SettingControl {
     public TextField txtAlertInterval;
     public TextField txtActiveThreshold;
@@ -24,22 +21,15 @@ public class SettingControl {
     public void init(SettingGUI settingGUI){
         this.settingGUI = settingGUI;
 
-        UnaryOperator<TextFormatter.Change> integerFilter = new UnaryOperator<TextFormatter.Change>() {
-            @Override
-            public TextFormatter.Change apply(TextFormatter.Change change) {
-                if (change.getControlNewText().matches("[0-9]*"))
-                    return change;
-                return null;
-            }
-        };
-        txtAlertInterval.setTextFormatter(new TextFormatter<>(integerFilter));
-        txtActiveThreshold.setTextFormatter(new TextFormatter<>(integerFilter));
-        txtLeaveThreshold.setTextFormatter(new TextFormatter<>(integerFilter));
-        txtPauseTime.setTextFormatter(new TextFormatter<>(integerFilter));
-        txtCursorDiff.setTextFormatter(new TextFormatter<>(integerFilter));
-        txtLevel1Threshold.setTextFormatter(new TextFormatter<>(integerFilter));
-        txtLevel2Threshold.setTextFormatter(new TextFormatter<>(integerFilter));
-        txtLevel3Threshold.setTextFormatter(new TextFormatter<>(integerFilter));
+
+        txtAlertInterval.setTextFormatter(new TextFormatter<>(MathUtils.integerFilter));
+        txtActiveThreshold.setTextFormatter(new TextFormatter<>(MathUtils.integerFilter));
+        txtLeaveThreshold.setTextFormatter(new TextFormatter<>(MathUtils.integerFilter));
+        txtPauseTime.setTextFormatter(new TextFormatter<>(MathUtils.integerFilter));
+        txtCursorDiff.setTextFormatter(new TextFormatter<>(MathUtils.integerFilter));
+        txtLevel1Threshold.setTextFormatter(new TextFormatter<>(MathUtils.integerFilter));
+        txtLevel2Threshold.setTextFormatter(new TextFormatter<>(MathUtils.integerFilter));
+        txtLevel3Threshold.setTextFormatter(new TextFormatter<>(MathUtils.integerFilter));
 
         txtAlertInterval.setText(String.valueOf(Data.Config.ALERT_INTERVAL));
         txtActiveThreshold.setText(String.valueOf(Data.Config.ACTIVE_THRESHOLD));

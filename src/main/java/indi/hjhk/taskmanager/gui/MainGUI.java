@@ -42,6 +42,7 @@ public class MainGUI extends Application {
     @Override
     public void init() throws Exception {
         super.init();
+        TaskContextMenu.setMainGUI(this);
         Platform.runLater(() -> {
             Data.Active.preCursorX = (int) robot.getMouseX();
             Data.Active.preCursorY = (int) robot.getMouseY();
@@ -114,12 +115,16 @@ public class MainGUI extends Application {
                     stringBuilder.append(String.format("\t已使用计算机%d时%d分，建议离座休息\n", activeMinutes/60, activeMinutes%60));
                     stringBuilder.append(String.format("\t需要休息%d分钟以解除警报", Data.Config.LEAVE_THRESHOLD));
                 }
-
                 Data.Alert.closeAlert();
-                Data.Alert.curAlert = new Alert(Alert.AlertType.WARNING, stringBuilder.toString());
-                Data.Alert.curAlert.setTitle("来自任务管理器的警报");
-                ((Stage) Data.Alert.curAlert.getDialogPane().getScene().getWindow()).setAlwaysOnTop(true);
-                Data.Alert.curAlert.show();
+
+                Alert newAlert = new Alert(Alert.AlertType.WARNING, stringBuilder.toString());
+                newAlert.setTitle("警报");
+                newAlert.setHeaderText("来自任务管理器的警报");
+                Data.Alert.setAlertAlwaysOnTop(newAlert);
+                Data.Alert.setAlertConcurrent(newAlert);
+                newAlert.show();
+
+                Data.Alert.curAlert = newAlert;
                 Data.Alert.lastAlert = curTIme;
             }
         }else{
@@ -170,6 +175,17 @@ public class MainGUI extends Application {
                 controller.lblTaskMsg.setText(stringBuilder.toString());
             }
         }
+    }
+
+    public void finishSelectedTask(){
+        int selectedTaskId = controller.getSelectedTaskId();
+        if (selectedTaskId < 0) return;
+        Task oldTask = Data.Tasks.taskList.get(selectedTaskId);
+        if (oldTask.isDone()) return;
+        Task newTask = oldTask.clone();
+        newTask.finish();
+        Data.Tasks.updateTask(selectedTaskId, newTask);
+        updateAll(LocalDateTime.now());
     }
 
     @Override

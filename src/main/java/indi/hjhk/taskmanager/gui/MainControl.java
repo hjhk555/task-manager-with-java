@@ -24,18 +24,23 @@ public class MainControl {
         this.mainGUI = mainGUI;
     }
 
+    public int getSelectedTaskId(){
+        IdentifiedString selected = lstTasks.getSelectionModel().getSelectedItem();
+        if (selected == null) return -1;
+        return selected.id;
+    }
+
     public void lstTask_mouseClicked(MouseEvent mouseEvent) {
         TaskContextMenu.getInstance().hide();
-        IdentifiedString selected = lstTasks.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-        int selectedIndex = selected.id;
+        int selectedTaskId = getSelectedTaskId();
+        if (selectedTaskId < 0) return;
         if (mouseEvent.getButton() == MouseButton.PRIMARY){
             if (mouseEvent.getClickCount() == 2){
                 // double click
             }
         }else if (mouseEvent.getButton() == MouseButton.SECONDARY){
             TaskContextMenu taskContextMenu = TaskContextMenu.getInstance();
-            taskContextMenu.menuItemFinish.setDisable(!Data.Tasks.taskList.get(selectedIndex).isDone());
+            taskContextMenu.menuItemFinish.setDisable(Data.Tasks.taskList.get(selectedTaskId).isDone());
             taskContextMenu.show(lstTasks, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         }
     }
@@ -60,6 +65,14 @@ public class MainControl {
     public void menuSetting_selected(ActionEvent actionEvent) {
         try {
             new SettingGUI().start(mainGUI);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void menuNewTask_clicked(ActionEvent actionEvent) {
+        try{
+            new TaskGUI(-1, TaskGUI.WindowType.CREATE).start(mainGUI);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

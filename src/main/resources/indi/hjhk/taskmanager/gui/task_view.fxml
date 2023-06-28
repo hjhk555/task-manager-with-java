@@ -1,10 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<BorderPane prefHeight="474.0" prefWidth="417.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="indi.hjhk.taskmanager.gui.TaskControl">
+<BorderPane prefHeight="487.0" prefWidth="361.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="indi.hjhk.taskmanager.gui.TaskControl">
    <center>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <AnchorPane prefHeight="239.0" prefWidth="313.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="任务内容" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="10.0" />
+            <TextArea fx:id="txtContent" layoutX="77.0" layoutY="4.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="76.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="8.0" />
+         </children>
+      </AnchorPane>
    </center>
+   <top>
+      <AnchorPane prefHeight="43.0" prefWidth="313.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label layoutX="14.0" layoutY="18.0" text="任务名称" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0" />
+            <TextField fx:id="txtTitle" layoutX="76.0" layoutY="11.0" AnchorPane.leftAnchor="76.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="11.0" />
+         </children>
+      </AnchorPane>
+   </top>
+   <bottom>
+      <VBox prefHeight="200.0" prefWidth="334.0" BorderPane.alignment="CENTER">
+         <children>
+            <AnchorPane maxHeight="-Infinity" prefHeight="35.0" prefWidth="334.0">
+               <children>
+                  <Label layoutX="32.0" layoutY="17.0" text="任务类型" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="10.0" />
+                  <ChoiceBox fx:id="selTaskType" layoutX="76.0" layoutY="6.0" onAction="#selTaskType_onChange" prefHeight="23.0" prefWidth="91.0" AnchorPane.leftAnchor="76.0" AnchorPane.topAnchor="6.0" />
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="90.0" prefWidth="334.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="14.0" text="任务时限" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0" />
+                  <StackPane fx:id="paneTypedTask" layoutX="79.0" layoutY="12.0" prefHeight="107.0" prefWidth="207.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="76.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0">
+                     <children>
+                        <AnchorPane fx:id="paneUnlimitedTask" prefHeight="200.0" prefWidth="200.0" visible="false">
+                           <children>
+                              <Label layoutY="6.0" text="无时限" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="6.0" />
+                           </children></AnchorPane>
+                        <AnchorPane fx:id="paneNormalTask" prefHeight="200.0" prefWidth="200.0" visible="false">
+                           <children>
+                              <DatePicker fx:id="dateNormal" layoutY="2.0" showWeekNumbers="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="2.0" />
+                              <ChoiceBox fx:id="selNormalHour" layoutY="44.0" prefHeight="23.0" prefWidth="55.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="40.0" />
+                              <Label layoutX="63.0" layoutY="44.0" text="时" AnchorPane.leftAnchor="63.0" AnchorPane.topAnchor="44.0" />
+                              <ChoiceBox fx:id="selNormalMinute" layoutX="82.0" layoutY="40.0" prefHeight="23.0" prefWidth="55.0" AnchorPane.leftAnchor="82.0" AnchorPane.topAnchor="40.0" />
+                              <Label layoutX="145.0" layoutY="44.0" text="分" AnchorPane.leftAnchor="145.0" AnchorPane.topAnchor="44.0" />
+                           </children></AnchorPane>
+                     </children></StackPane>
+               </children>
+            </AnchorPane>
+            <AnchorPane maxHeight="-Infinity" prefHeight="36.0" prefWidth="334.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="31.0" text="任务状态" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="10.0" />
+                  <CheckBox fx:id="chkTaskDone" layoutX="76.0" layoutY="10.0" mnemonicParsing="false" text="已完成" AnchorPane.leftAnchor="76.0" AnchorPane.topAnchor="10.0" />
+                  <CheckBox fx:id="chkTaskAlerted" layoutX="147.0" layoutY="10.0" mnemonicParsing="false" text="逾期警报" AnchorPane.leftAnchor="147.0" AnchorPane.topAnchor="10.0" />
+               </children>
+            </AnchorPane>
+            <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="37.0" prefWidth="316.0" spacing="60.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#btnConfirm_clicked" text="  确认  " />
+                  <Button mnemonicParsing="false" onAction="#btnCancel_clicked" text="  取消  " />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </bottom>
 </BorderPane>

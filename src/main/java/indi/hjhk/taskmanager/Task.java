@@ -1,11 +1,17 @@
 package indi.hjhk.taskmanager;
 
-import java.io.Serializable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 
-public abstract class Task implements Serializable {
+public abstract class Task implements Externalizable {
     public String title;
     public String content;
     public boolean isAlerted;
@@ -38,7 +44,36 @@ public abstract class Task implements Serializable {
         return "";
     }
 
+    public static ObservableList<String> getTaskTypeList(){
+        ObservableList<String> taskTypeList = FXCollections.observableArrayList();
+        taskTypeList.add(NormalTask.TASK_TYPE_SEQ, NormalTask.TASK_TYPE_NAME);
+        taskTypeList.add(UnlimitedTask.TASK_TYPE_SEQ, UnlimitedTask.TASK_TYPE_NAME);
+        return taskTypeList;
+    }
+
+    public void cloneSharedFrom(Task from){
+        title = from.title;
+        content = from.content;
+        isAlerted = from.isAlerted;
+    }
+
+    public void writeSharedExternal(ObjectOutput out) throws IOException {
+        MathUtils.writeEncodedString(title, out);
+        MathUtils.writeEncodedString(content, out);
+        out.writeBoolean(isAlerted);
+    }
+
+    public void readSharedExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        title = MathUtils.readEncodeedString(in);
+        content = MathUtils.readEncodeedString(in);
+        isAlerted = in.readBoolean();
+    }
+
+    public abstract Task clone();
     public abstract String toString(LocalDateTime curTime);
+    public abstract void finish();
     public abstract boolean isDone();
     public abstract LocalDateTime getExpireDate();
+    public abstract String getTypeName();
+    public abstract int getTypeSeq();
 }
