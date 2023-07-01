@@ -278,10 +278,5 @@ public class Data {
                 curAlert.close();
             curAlert = null;
         }
-
-        public static void resetAlert(){
-            closeAlert();
-            preAlert = false;
-        }
     }
 }

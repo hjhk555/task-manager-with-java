@@ -74,7 +74,7 @@ public class MainGUI extends Application {
 
     public void onConfigChange(){
         LocalDateTime curTime = LocalDateTime.now();
-        Data.Alert.resetAlert();
+        Data.Alert.closeAlert();
         updateAll(curTime);
     }
 

@@ -50,7 +50,7 @@ public class MainControl {
 
     public void switchAlert(){
         if (!Data.Alert.pauseAlert){
-            Data.Alert.resetAlert();
+            Data.Alert.closeAlert();
             Data.Alert.pauseAlert = true;
             Data.Alert.pauseStart = LocalDateTime.now();
             btnPause.setText("恢复警报");
