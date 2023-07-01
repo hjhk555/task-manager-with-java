@@ -2,12 +2,8 @@ package indi.hjhk.taskmanager;
 
 import indi.hjhk.global.GlobalConfig;
 import indi.hjhk.taskmanager.gui.MainGUI;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -15,7 +11,6 @@ import java.io.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Data {
     public static String appVersion = "1.0.0";
@@ -254,7 +249,7 @@ public class Data {
     }
 
     public static class Alert{
-        public static boolean preAlert = false;
+        public static boolean isAlertActive = false;
         public static boolean pauseAlert = false;
         public static LocalDateTime pauseStart;
         public static LocalDateTime alertStart;

@@ -105,10 +105,11 @@ public class MainGUI extends Application {
                                 activeMinutes >= Data.Config.ACTIVE_THRESHOLD;
         boolean requireAlert = activeExceed || emergeTaskList.requireAlert;
         if (requireAlert){
-            if (!Data.Alert.preAlert || Duration.between(Data.Alert.lastAlert, curTIme).toMinutes() >= Data.Config.ALERT_INTERVAL){
+            if (!Data.Alert.isAlertActive || Duration.between(Data.Alert.lastAlert, curTIme).toMinutes() >= Data.Config.ALERT_INTERVAL){
                 // trigger alert
-                if (!Data.Alert.preAlert){
+                if (!Data.Alert.isAlertActive){
                     Data.Alert.alertStart = curTIme;
+                    Data.Alert.isAlertActive = true;
                 }
                 StringBuilder stringBuilder = new StringBuilder();
                 if (emergeTaskList.requireAlert) {
@@ -141,8 +142,10 @@ public class MainGUI extends Application {
             }
         }else{
             Data.Alert.closeAlert();
+            // remove alert flag
+            if (Data.Active.activeStatus == Data.Active.ActiveStatus.LEFT)
+                Data.Alert.isAlertActive = false;
         }
-        Data.Alert.preAlert = requireAlert;
     }
 
     public void updateActiveMsg(LocalDateTime curTime){
