@@ -48,6 +48,15 @@ public class TaskControl {
         setUnlimitedTaskPaneContent(null);
     }
 
+    public void setReadOnly(boolean readOnly){
+        txtTitle.setEditable(!readOnly);
+        txtContent.setEditable(!readOnly);
+        selTaskType.setDisable(readOnly);
+        paneTypedTask.setDisable(readOnly);
+        chkTaskDone.setDisable(readOnly);
+        chkTaskAlerted.setDisable(readOnly);
+    }
+
     public void showTaskOnPane(Task task){
         if (task == null) return;
 
@@ -92,7 +101,7 @@ public class TaskControl {
     }
 
     public Pane switchUnlimitedTaskPane(){
-        chkTaskDone.setVisible(false);
+        chkTaskDone.setVisible(true);
         return paneUnlimitedTask;
     }
 

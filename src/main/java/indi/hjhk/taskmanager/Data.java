@@ -18,6 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Data {
+    public static String appVersion = "1.0.0";
+    public static String appPubDate = "2023/7/1";
+    public static String appInfo = "制作人：黄嘉铧\n版本："+appVersion+"\n发行日期："+appPubDate;
+
     public static class Config{
         public static String configFileName = "settings.conf";
         public static GlobalConfig config = new GlobalConfig(configFileName);
@@ -60,11 +64,11 @@ public class Data {
     }
 
     public static class Tasks {
-        public static ArrayList<Task> taskList = new ArrayList<>();
+        public static ArrayList<Task> taskList;
         public static String taskFileName = "tasks.list";
 
         static {
-            taskList.addAll(readTasksFromFile(taskFileName));
+            taskList = readTasksFromFile(taskFileName);
         }
 
         public static ArrayList<Task> readTasksFromFile(String fileName){
@@ -72,36 +76,44 @@ public class Data {
                 ArrayList<Task> tasks = new ArrayList<>();
                 ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(fileName));
                 int taskSize = objectInputStream.readInt();
-                for (int i=0; i<taskSize; i++)
-                    tasks.add((Task) objectInputStream.readObject());
+                MathUtils.setCode(taskSize);
+                for (int i=0; i<taskSize; i++) {
+                    Task newTask = Task.readTaskExternal(objectInputStream);
+                    tasks.add(newTask);
+                }
                 objectInputStream.close();
                 return tasks;
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException e) {
                 return new ArrayList<>();
             }
         }
 
         public static void addTask(Task newTask){
+            History.addActionRecord(new UpdateTaskRecord(null, newTask, taskList.size()));
             taskList.add(newTask);
             writeTasksToFile(taskFileName);
         }
 
         public static void updateTask(int index, Task newTask){
+            History.addActionRecord(new UpdateTaskRecord(taskList.get(index), newTask, index));
             taskList.set(index, newTask);
             writeTasksToFile(taskFileName);
         }
 
         public static void removeTask(int index){
-            taskList.remove(index);
-            writeTasksToFile(taskFileName);
+            if (taskList.get(index) == null) return;
+            updateTask(index, null);
         }
 
         public static void writeTasksToFile(String fileName){
             try{
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(fileName));
-                objectOutputStream.writeInt(taskList.size());
+                int taskSize = taskList.stream().mapToInt(value -> value == null ? 0 : 1).sum();
+                MathUtils.setCode(taskSize);
+                objectOutputStream.writeInt(taskSize);
                 for (Task task : taskList)
-                    objectOutputStream.writeObject(task);
+                    if (task != null)
+                        task.writeExternal(objectOutputStream);
                 objectOutputStream.close();
             } catch (IOException ignored) {
             }
@@ -110,7 +122,8 @@ public class Data {
         public static ObservableList<IdentifiedString> getSortedTaskInfo(LocalDateTime curTime){
             ArrayList<IdentifiedTask> sortedList = new ArrayList<>();
             for (int i=0; i<taskList.size(); i++){
-                sortedList.add(new IdentifiedTask(i, taskList.get(i)));
+                Task task = taskList.get(i);
+                if (task != null) sortedList.add(new IdentifiedTask(i, taskList.get(i)));
             }
             sortedList.sort(IdentifiedTask.comparator);
             ObservableList<IdentifiedString> taskInfo = FXCollections.observableArrayList();
@@ -128,7 +141,7 @@ public class Data {
         public static EmergeTaskList getEmergeTaskList(LocalDateTime curTime){
             EmergeTaskList emergeTaskList = new EmergeTaskList();
             for (Task task : taskList){
-                if (task.isDone()) continue;
+                if (task == null || task.isDone()) continue;
                 LocalDateTime expiredDate = task.getExpireDate();
                 if (expiredDate.isBefore(curTime)){
                     emergeTaskList.exceedTasks.add(task);
@@ -203,13 +216,48 @@ public class Data {
     }
 
     public static class History{
+        private static ArrayList<ActionRecord> history = new ArrayList<>();
+        private static int cursor = 0;
 
+        private static void addActionRecord(ActionRecord record){
+            if (cursor < history.size()){
+                // clear history after cursor
+                history.subList(cursor, history.size()).clear();
+            }
+            history.add(cursor, record);
+            cursor++;
+        }
+
+        public static boolean canRedo(){
+            return cursor < history.size();
+        }
+
+        public static boolean canUndo(){
+            return cursor > 0;
+        }
+
+        public static boolean redo(){
+            if (cursor >= history.size()) return false;
+            history.get(cursor).redo();
+            cursor++;
+            Tasks.writeTasksToFile(Tasks.taskFileName);
+            return true;
+        }
+
+        public static boolean undo(){
+            if (cursor <= 0) return false;
+            cursor--;
+            history.get(cursor).undo();
+            Tasks.writeTasksToFile(Tasks.taskFileName);
+            return true;
+        }
     }
 
     public static class Alert{
         public static boolean preAlert = false;
         public static boolean pauseAlert = false;
         public static LocalDateTime pauseStart;
+        public static LocalDateTime alertStart;
         public static LocalDateTime lastAlert;
         public static javafx.scene.control.Alert curAlert = null;
 

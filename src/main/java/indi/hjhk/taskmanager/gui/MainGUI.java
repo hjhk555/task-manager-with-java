@@ -22,6 +22,7 @@ import java.util.ArrayList;
 public class MainGUI extends Application {
     private static final GlobalLock APP_LOCK = new GlobalLock("app");
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
     public Scene mainScene;
     private final Robot robot = new Robot();
     private MainControl controller;
@@ -84,6 +85,12 @@ public class MainGUI extends Application {
         checkAndPerformAlert(curTime, emergeTaskList);
         updateActiveMsg(curTime);
         updateTaskMsg(curTime, emergeTaskList);
+        updateUI();
+    }
+
+    private void updateUI(){
+        controller.menuUndo.setDisable(!Data.History.canUndo());
+        controller.menuRedo.setDisable(!Data.History.canRedo());
     }
 
     public void checkAndPerformAlert(LocalDateTime curTIme, Data.Tasks.EmergeTaskList emergeTaskList){
@@ -100,6 +107,9 @@ public class MainGUI extends Application {
         if (requireAlert){
             if (!Data.Alert.preAlert || Duration.between(Data.Alert.lastAlert, curTIme).toMinutes() >= Data.Config.ALERT_INTERVAL){
                 // trigger alert
+                if (!Data.Alert.preAlert){
+                    Data.Alert.alertStart = curTIme;
+                }
                 StringBuilder stringBuilder = new StringBuilder();
                 if (emergeTaskList.requireAlert) {
                     stringBuilder.append("以下任务已逾期:\n");
@@ -119,7 +129,9 @@ public class MainGUI extends Application {
 
                 Alert newAlert = new Alert(Alert.AlertType.WARNING, stringBuilder.toString());
                 newAlert.setTitle("警报");
-                newAlert.setHeaderText("来自任务管理器的警报");
+                newAlert.setHeaderText(String.format("来自任务管理器的警报\n\t%s ~ %s",
+                        TIME_FORMAT.format(Data.Alert.alertStart),
+                        TIME_FORMAT.format(curTIme)));
                 Data.Alert.setAlertAlwaysOnTop(newAlert);
                 Data.Alert.setAlertConcurrent(newAlert);
                 newAlert.show();
@@ -186,6 +198,19 @@ public class MainGUI extends Application {
         newTask.finish();
         Data.Tasks.updateTask(selectedTaskId, newTask);
         updateAll(LocalDateTime.now());
+    }
+
+    public void deleteSelectedTask(){
+        int selectedTaskId = controller.getSelectedTaskId();
+        if (selectedTaskId < 0) return;
+        Data.Tasks.removeTask(selectedTaskId);
+        updateAll(LocalDateTime.now());
+    }
+
+    public void updateSelectedTask(){
+        int selectedTaskId = controller.getSelectedTaskId();
+        if (selectedTaskId < 0) return;
+        new TaskGUI(selectedTaskId, TaskGUI.WindowType.UPDATE).start(this);
     }
 
     @Override

@@ -29,13 +29,40 @@ public class MathUtils {
         }
     };
 
-    public static byte code = 13;
+    private static byte[] encode = new byte[256];
+    private static byte[] decode = new byte[256];
+
+    static {
+        int defCode = 23;
+        for (int i=0; i<256; i++){
+            encode[i] = (byte) (i-128+defCode);
+            decode[i] = (byte) (i-128-defCode);
+        }
+    }
+
+    private static int nextInt(int preInt){
+        return (44383 * preInt + 35171) % 49123;
+    }
+
+    public static void setCode(int code){
+        for (int i=0; i<256; i++) decode[i] = -128;
+        code = nextInt(code) % 256;
+        int codeZero = (code == 0 ? 1 : code);
+        encode[0] = (byte) (codeZero - 128);
+        for (int i=1; i<256; i++){
+            code = nextInt(code) % 256;
+            int iCode = code;
+            while (iCode == codeZero || decode[iCode] != -128) iCode = (iCode+1) % 256;
+            decode[iCode] = (byte) (i - 128);
+            encode[i] = (byte) (iCode - 128);
+        }
+    }
 
     public static void writeEncodedString(String str, ObjectOutput out) throws IOException {
         byte[] bytes = str.getBytes();
         out.writeInt(bytes.length);
         for (byte b : bytes){
-            out.writeByte(b+code);
+            out.writeByte(encode[b+128]);
         }
     }
 
@@ -43,7 +70,7 @@ public class MathUtils {
         int byteLength = in.readInt();
         byte[] bytes = new byte[byteLength];
         for (int i=0; i<byteLength; i++)
-            bytes[i] = (byte) (in.readByte()-code);
+            bytes[i] = decode[in.readByte()+128];
         return new String(bytes);
     }
 }

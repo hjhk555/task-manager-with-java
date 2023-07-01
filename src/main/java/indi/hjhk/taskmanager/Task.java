@@ -11,7 +11,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 
-public abstract class Task implements Externalizable {
+public abstract class Task{
     public String title;
     public String content;
     public boolean isAlerted;
@@ -36,7 +36,7 @@ public abstract class Task implements Externalizable {
     };
 
     protected static String getEmergeTag(LocalDateTime curTime, LocalDateTime expireDate){
-        if (expireDate.isBefore(curTime)) return "⚠ ⚠ ⚠";
+        if (expireDate.isBefore(curTime)) return "⚠⚠⚠";
         long daysLeft = Duration.between(curTime, expireDate).toDays();
         if (daysLeft < Data.Config.ALERT_LEVEL3_THRESHOLD) return "★★★";
         if (daysLeft < Data.Config.ALERT_LEVEL2_THRESHOLD) return "★★";
@@ -57,7 +57,24 @@ public abstract class Task implements Externalizable {
         isAlerted = from.isAlerted;
     }
 
+    public static Task readTaskExternal(ObjectInput in){
+        try{
+            int typeSeq = in.readInt();
+            Task newTask = switch (typeSeq){
+                case NormalTask.TASK_TYPE_SEQ -> new NormalTask();
+                case UnlimitedTask.TASK_TYPE_SEQ -> new UnlimitedTask();
+                default -> null;
+            };
+            if (newTask == null) return null;
+            newTask.readExternal(in);
+            return newTask;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void writeSharedExternal(ObjectOutput out) throws IOException {
+        out.writeInt(getTypeSeq());
         MathUtils.writeEncodedString(title, out);
         MathUtils.writeEncodedString(content, out);
         out.writeBoolean(isAlerted);
@@ -69,6 +86,8 @@ public abstract class Task implements Externalizable {
         isAlerted = in.readBoolean();
     }
 
+    public abstract void readExternal(ObjectInput in) throws IOException, ClassNotFoundException;
+    public abstract void writeExternal(ObjectOutput out) throws IOException;
     public abstract Task clone();
     public abstract String toString(LocalDateTime curTime);
     public abstract void finish();

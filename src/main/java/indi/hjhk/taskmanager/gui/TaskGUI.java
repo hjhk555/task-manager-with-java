@@ -5,6 +5,7 @@ import indi.hjhk.taskmanager.NormalTask;
 import indi.hjhk.taskmanager.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -27,14 +28,19 @@ public class TaskGUI{
         this.windowType = windowType;
     }
 
-    public void start(MainGUI mainGUI) throws IOException {
+    public void start(MainGUI mainGUI){
         this.mainGUI = mainGUI;
 
         Stage stage = new Stage();
+        stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(mainGUI.mainScene.getWindow());
 
         FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("task_view.fxml"));
-        taskScene = new Scene(fxmlLoader.load());
+        try {
+            taskScene = new Scene(fxmlLoader.load());
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
 
         controller = fxmlLoader.getController();
         controller.init(this);
@@ -46,7 +52,13 @@ public class TaskGUI{
                 controller.chkTaskAlerted.setSelected(true);
             }
             case VIEW -> {
-
+                stage.setTitle("查看任务");
+                controller.setReadOnly(true);
+                controller.showTaskOnPane(Data.Tasks.taskList.get(taskId));
+            }
+            case UPDATE -> {
+                stage.setTitle("修改任务");
+                controller.showTaskOnPane(Data.Tasks.taskList.get(taskId));
             }
         }
 

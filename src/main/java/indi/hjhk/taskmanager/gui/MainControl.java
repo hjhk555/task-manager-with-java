@@ -3,9 +3,7 @@ package indi.hjhk.taskmanager.gui;
 import indi.hjhk.taskmanager.Data;
 import indi.hjhk.taskmanager.IdentifiedString;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
@@ -13,6 +11,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class MainControl {
+    public MenuItem menuUndo;
+    public MenuItem menuRedo;
     private MainGUI mainGUI;
     public Button btnPause;
     public Label lblActiveMsg;
@@ -31,15 +31,14 @@ public class MainControl {
     }
 
     public void lstTask_mouseClicked(MouseEvent mouseEvent) {
-        TaskContextMenu.getInstance().hide();
+        TaskContextMenu taskContextMenu = TaskContextMenu.getInstance();
+        taskContextMenu.hide();
         int selectedTaskId = getSelectedTaskId();
         if (selectedTaskId < 0) return;
         if (mouseEvent.getButton() == MouseButton.PRIMARY){
-            if (mouseEvent.getClickCount() == 2){
-                // double click
-            }
+            if (mouseEvent.getClickCount() == 2)
+                new TaskGUI(selectedTaskId, TaskGUI.WindowType.VIEW).start(mainGUI);
         }else if (mouseEvent.getButton() == MouseButton.SECONDARY){
-            TaskContextMenu taskContextMenu = TaskContextMenu.getInstance();
             taskContextMenu.menuItemFinish.setDisable(Data.Tasks.taskList.get(selectedTaskId).isDone());
             taskContextMenu.show(lstTasks, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         }
@@ -71,10 +70,24 @@ public class MainControl {
     }
 
     public void menuNewTask_clicked(ActionEvent actionEvent) {
-        try{
-            new TaskGUI(-1, TaskGUI.WindowType.CREATE).start(mainGUI);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        new TaskGUI(-1, TaskGUI.WindowType.CREATE).start(mainGUI);
+    }
+
+    public void menuUndo_clicked(ActionEvent actionEvent) {
+        if (Data.History.undo())
+            mainGUI.updateAll(LocalDateTime.now());
+    }
+
+    public void menuRedo_clicked(ActionEvent actionEvent) {
+        if (Data.History.redo())
+            mainGUI.updateAll(LocalDateTime.now());
+    }
+
+    public void btnAbout_clicked(ActionEvent actionEvent) {
+        Alert infoAlert = new Alert(Alert.AlertType.INFORMATION, Data.appInfo);
+        infoAlert.setHeaderText("任务管理器");
+        infoAlert.setTitle("关于");
+        Data.Alert.setAlertConcurrent(infoAlert);
+        infoAlert.show();
     }
 }
