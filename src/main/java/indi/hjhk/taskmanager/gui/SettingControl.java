@@ -69,7 +69,7 @@ public class SettingControl {
             settingGUI.mainGUI.onConfigChange();
             settingGUI.settingScene.getWindow().hide();
         } catch (AlertMsgException e) {
-            new Alert(Alert.AlertType.ERROR, e.getMessage()).showAndWait();
+            Data.Alert.getIconedAlert(Alert.AlertType.ERROR, e.getMessage()).showAndWait();
         }
     }
 }

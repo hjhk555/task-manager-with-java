@@ -1,5 +1,6 @@
 package indi.hjhk.taskmanager.gui;
 
+import indi.hjhk.taskmanager.Data;
 import indi.hjhk.taskmanager.NormalTask;
 import indi.hjhk.taskmanager.Task;
 import indi.hjhk.taskmanager.UnlimitedTask;
@@ -110,7 +111,7 @@ public class TaskControl {
 
     public void btnConfirm_clicked(ActionEvent actionEvent) {
         if (txtTitle.getText().length() == 0){
-            new Alert(Alert.AlertType.ERROR, "任务名称不得为空").showAndWait();
+            Data.Alert.getIconedAlert(Alert.AlertType.ERROR, "任务名称不得为空").showAndWait();
             return;
         }
         Task confirmedTask;
@@ -129,7 +130,7 @@ public class TaskControl {
                 confirmedTask = confirmedUnlimitedTask;
             }
             default -> {
-                new Alert(Alert.AlertType.ERROR, "未知的任务类型").showAndWait();
+                Data.Alert.getIconedAlert(Alert.AlertType.ERROR, "未知的任务类型").showAndWait();
                 return;
             }
         }

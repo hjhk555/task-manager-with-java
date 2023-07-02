@@ -4,6 +4,8 @@ import indi.hjhk.global.GlobalConfig;
 import indi.hjhk.taskmanager.gui.MainGUI;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -13,8 +15,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Data {
-    public static String appVersion = "1.0.0";
-    public static String appPubDate = "2023/7/1";
+    public static String appVersion = "1.0.1";
+    public static String appPubDate = "2023/7/2";
     public static String appInfo = "制作人：黄嘉铧\n版本："+appVersion+"\n发行日期："+appPubDate;
 
     public static class Config{
@@ -255,6 +257,12 @@ public class Data {
         public static LocalDateTime alertStart;
         public static LocalDateTime lastAlert;
         public static javafx.scene.control.Alert curAlert = null;
+
+        public static javafx.scene.control.Alert getIconedAlert(javafx.scene.control.Alert.AlertType alertType, String content){
+            javafx.scene.control.Alert newAlert = new javafx.scene.control.Alert(alertType, content);
+            ((Stage) newAlert.getDialogPane().getScene().getWindow()).getIcons().add(MainGUI.appIcon);
+            return newAlert;
+        }
 
         public static long getPauseMinutesLeft(LocalDateTime curTime){
             return Config.PAUSE_LENGTH - Duration.between(pauseStart, curTime).toMinutes();

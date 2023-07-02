@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.stage.Stage;
@@ -18,11 +19,13 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainGUI extends Application {
     private static final GlobalLock APP_LOCK = new GlobalLock("app");
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
+    public static final Image appIcon = new Image(MainGUI.class.getResourceAsStream("icon.png"));
     public Scene mainScene;
     private final Robot robot = new Robot();
     private MainControl controller;
@@ -52,6 +55,8 @@ public class MainGUI extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        stage.getIcons().add(appIcon);
+
         FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("main_view.fxml"));
         mainScene = new Scene(fxmlLoader.load());
         controller = fxmlLoader.getController();
@@ -128,7 +133,7 @@ public class MainGUI extends Application {
                 }
                 Data.Alert.closeAlert();
 
-                Alert newAlert = new Alert(Alert.AlertType.WARNING, stringBuilder.toString());
+                Alert newAlert = Data.Alert.getIconedAlert(Alert.AlertType.WARNING, stringBuilder.toString());
                 newAlert.setTitle("警报");
                 newAlert.setHeaderText(String.format("来自任务管理器的警报\n\t%s ~ %s",
                         TIME_FORMAT.format(Data.Alert.alertStart),
@@ -143,7 +148,7 @@ public class MainGUI extends Application {
         }else{
             Data.Alert.closeAlert();
             // remove alert flag
-            if (Data.Active.activeStatus == Data.Active.ActiveStatus.LEFT)
+            if (Data.Active.activeStatus != Data.Active.ActiveStatus.LEAVING)
                 Data.Alert.isAlertActive = false;
         }
     }

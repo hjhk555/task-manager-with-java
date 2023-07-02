@@ -84,7 +84,7 @@ public class MainControl {
     }
 
     public void btnAbout_clicked(ActionEvent actionEvent) {
-        Alert infoAlert = new Alert(Alert.AlertType.INFORMATION, Data.appInfo);
+        Alert infoAlert = Data.Alert.getIconedAlert(Alert.AlertType.INFORMATION, Data.appInfo);
         infoAlert.setHeaderText("任务管理器");
         infoAlert.setTitle("关于");
         Data.Alert.setAlertConcurrent(infoAlert);
