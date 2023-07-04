@@ -31,13 +31,13 @@ public class TaskControl {
     public ChoiceBox<Integer> selNormalHour;
     public ChoiceBox<Integer> selNormalMinute;
     private TaskGUI taskGUI;
-    private Pane shownPane = null;
 
     public void init(TaskGUI taskGUI){
         this.taskGUI = taskGUI;
 
         selTaskType.setItems(Task.getTaskTypeList());
-        paneTypedTask.getChildren().forEach(node -> node.setVisible(false));
+        paneTypedTask.getChildren().forEach(node -> node.setVisible(true));
+        paneTypedTask.getChildren().clear();
 
         ObservableList<Integer> hourList = FXCollections.observableArrayList(IntStream.range(0, 24).boxed().collect(Collectors.toList()));
         selNormalHour.setItems(hourList);
@@ -73,15 +73,15 @@ public class TaskControl {
     }
 
     public void switchTaskPane(int taskTypeSeq){
-        if (shownPane != null) shownPane.setVisible(false);
+        paneTypedTask.getChildren().clear();
 
-        shownPane = switch (taskTypeSeq){
+        Pane shownPane = switch (taskTypeSeq){
             case NormalTask.TASK_TYPE_SEQ -> switchNormalTaskPane();
             case UnlimitedTask.TASK_TYPE_SEQ -> switchUnlimitedTaskPane();
             default -> null;
         };
 
-        if (shownPane != null) shownPane.setVisible(true);
+        if (shownPane != null) paneTypedTask.getChildren().add(shownPane);
     }
 
     public Pane switchNormalTaskPane(){
