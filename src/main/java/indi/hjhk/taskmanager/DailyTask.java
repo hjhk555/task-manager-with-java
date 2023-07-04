@@ -14,17 +14,13 @@ public class DailyTask extends RepeatTask{
     public LocalTime repeatTime;
 
     @Override
-    public String toString(LocalDateTime curTime) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append((curTime.isAfter(getExpireDate()) ? "[✘未完成]" : "[✔已完成]"));
-        stringBuilder.append(String.format("[每天%s更新]", TIME_FORMATTER.format(repeatTime)));
-        stringBuilder.append(title);
-        return stringBuilder.toString();
+    public boolean isDone() {
+        return false;
     }
 
     @Override
-    public boolean isDone() {
-        return false;
+    public String getExpireDateTag(LocalDateTime curTime) {
+        return String.format("[每天%s更新]", TIME_FORMATTER.format(repeatTime));
     }
 
     @Override

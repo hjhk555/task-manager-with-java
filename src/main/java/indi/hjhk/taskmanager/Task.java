@@ -94,9 +94,18 @@ public abstract class Task{
         return newTask;
     }
 
-    public abstract String toString(LocalDateTime curTime);
+    public String toString(LocalDateTime curTime){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getCompletionTag(curTime));
+        if (!isAlerted) stringBuilder.append("[勿扰]");
+        if (!isDone()) stringBuilder.append(getExpireDateTag(curTime));
+        stringBuilder.append(title);
+        return stringBuilder.toString();
+    }
     public abstract void finish();
     public abstract boolean isDone();
+    public abstract String getCompletionTag(LocalDateTime curTime);
+    public abstract String getExpireDateTag(LocalDateTime curTime);
     public abstract LocalDateTime getExpireDate();
     public abstract String getTypeName();
     public abstract int getTypeSeq();

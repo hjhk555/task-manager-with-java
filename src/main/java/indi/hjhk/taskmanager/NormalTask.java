@@ -22,18 +22,6 @@ public class NormalTask extends Task{
     }
 
     @Override
-    public String toString(LocalDateTime curTime) {
-        StringBuilder stringBuilder = new StringBuilder();
-        if (done){
-            stringBuilder.append("[✔已完成]");
-        }else{
-            stringBuilder.append(String.format("[%s未完成][%s到期]", getEmergeTag(curTime, expireDate), DATE_FORMAT.format(expireDate)));
-        }
-        stringBuilder.append(title);
-        return stringBuilder.toString();
-    }
-
-    @Override
     public void finish() {
         done = true;
     }
@@ -41,6 +29,16 @@ public class NormalTask extends Task{
     @Override
     public boolean isDone() {
         return done;
+    }
+
+    @Override
+    public String getCompletionTag(LocalDateTime curTime) {
+        return done ? "[✔已完成]" : String.format("[%s未完成]", getEmergeTag(curTime, expireDate));
+    }
+
+    @Override
+    public String getExpireDateTag(LocalDateTime curTime) {
+        return String.format("[%s到期]", DATE_FORMAT.format(expireDate));
     }
 
     @Override

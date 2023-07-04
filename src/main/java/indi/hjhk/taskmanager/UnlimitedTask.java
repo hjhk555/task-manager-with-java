@@ -19,18 +19,6 @@ public class UnlimitedTask extends Task{
     }
 
     @Override
-    public String toString(LocalDateTime curTime) {
-        StringBuilder stringBuilder = new StringBuilder();
-        if (done){
-            stringBuilder.append("[✔已完成]");
-        }else{
-            stringBuilder.append("[✘未完成][无时限]");
-        }
-        stringBuilder.append(title);
-        return stringBuilder.toString();
-    }
-
-    @Override
     public void finish() {
         done = true;
     }
@@ -38,6 +26,16 @@ public class UnlimitedTask extends Task{
     @Override
     public boolean isDone() {
         return done;
+    }
+
+    @Override
+    public String getCompletionTag(LocalDateTime curTime) {
+        return done ? "[✔已完成]" : "[✘未完成]";
+    }
+
+    @Override
+    public String getExpireDateTag(LocalDateTime curTime) {
+        return "[无时限]";
     }
 
     @Override

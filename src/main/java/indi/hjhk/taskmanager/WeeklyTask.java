@@ -43,17 +43,13 @@ public class WeeklyTask extends RepeatTask{
     }
 
     @Override
-    public String toString(LocalDateTime curTime) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append((curTime.isAfter(getExpireDate()) ? "[✘未完成]" : "[✔已完成]"));
-        stringBuilder.append(String.format("[%s%s更新]", Data.Constants.dayOfWeekName.get(dayOfWeek-1), TIME_FORMATTER.format(repeatTime)));
-        stringBuilder.append(title);
-        return stringBuilder.toString();
+    public boolean isDone() {
+        return false;
     }
 
     @Override
-    public boolean isDone() {
-        return false;
+    public String getExpireDateTag(LocalDateTime curTime) {
+        return String.format("[%s%s更新]", Data.Constants.dayOfWeekName.get(dayOfWeek-1), TIME_FORMATTER.format(repeatTime));
     }
 
     @Override

@@ -21,6 +21,11 @@ public abstract class RepeatTask extends Task{
     }
 
     @Override
+    public String getCompletionTag(LocalDateTime curTime) {
+        return curTime.isAfter(getExpireDate()) ? "[✘未完成]" : "[\uD83D\uDD04已完成]";
+    }
+
+    @Override
     public Task clone() {
         RepeatTask newTask = (RepeatTask) super.clone();
         newTask.doneTime = doneTime;
