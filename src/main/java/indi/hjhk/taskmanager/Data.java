@@ -13,11 +13,19 @@ import java.io.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Data {
-    public static String appVersion = "1.0.1";
-    public static String appPubDate = "2023/7/2";
+    public static String appVersion = "1.1.0";
+    public static String appPubDate = "2023/7/4";
     public static String appInfo = "制作人：黄嘉铧\n版本："+appVersion+"\n发行日期："+appPubDate;
+
+    public static class Constants{
+        public static final ObservableList<String> dayOfWeekName = FXCollections.observableArrayList("星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日");
+        public static final ObservableList<Integer> hourList = FXCollections.observableArrayList(IntStream.range(0, 24).boxed().collect(Collectors.toList()));
+        public static final ObservableList<Integer> minuteList = FXCollections.observableArrayList(IntStream.range(0, 60).boxed().collect(Collectors.toList()));
+    }
 
     public static class Config{
         public static String configFileName = "settings.conf";
@@ -145,7 +153,7 @@ public class Data {
                 if (expiredDate.isBefore(curTime)){
                     emergeTaskList.exceedTasks.add(task);
                     if (task.isAlerted) emergeTaskList.requireAlert = true;
-                }else if (Duration.between(curTime, expiredDate).toDays() < Config.ALERT_LEVEL2_THRESHOLD)
+                }else if (!(task instanceof RepeatTask) && Duration.between(curTime, expiredDate).toDays() < Config.ALERT_LEVEL2_THRESHOLD)
                     emergeTaskList.emergeTasks.add(task);
             }
             return emergeTaskList;

@@ -188,7 +188,7 @@ public class MainGUI extends Application {
             }else{
                 StringBuilder stringBuilder = new StringBuilder();
                 if (exceeds > 0)
-                    stringBuilder.append(String.format("%d个任务逾期 ", exceeds));
+                    stringBuilder.append(String.format("%d个任务到期 ", exceeds));
                 if (emerges > 0)
                     stringBuilder.append(String.format("%d个任务紧急 ", emerges));
                 controller.lblTaskMsg.setTextFill((emergeTaskList.requireAlert ? Color.RED : Color.OLIVE));

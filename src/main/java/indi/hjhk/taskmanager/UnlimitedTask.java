@@ -13,8 +13,7 @@ public class UnlimitedTask extends Task{
 
     @Override
     public Task clone() {
-        UnlimitedTask newTask = new UnlimitedTask();
-        newTask.cloneSharedFrom(this);
+        UnlimitedTask newTask = (UnlimitedTask) super.clone();
         newTask.done = done;
         return newTask;
     }
@@ -25,7 +24,7 @@ public class UnlimitedTask extends Task{
         if (done){
             stringBuilder.append("[✔已完成]");
         }else{
-            stringBuilder.append("[未完成][无时限]");
+            stringBuilder.append("[✘未完成][无时限]");
         }
         stringBuilder.append(title);
         return stringBuilder.toString();

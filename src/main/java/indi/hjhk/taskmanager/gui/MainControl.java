@@ -2,6 +2,8 @@ package indi.hjhk.taskmanager.gui;
 
 import indi.hjhk.taskmanager.Data;
 import indi.hjhk.taskmanager.IdentifiedString;
+import indi.hjhk.taskmanager.RepeatTask;
+import indi.hjhk.taskmanager.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -39,7 +41,15 @@ public class MainControl {
             if (mouseEvent.getClickCount() == 2)
                 new TaskGUI(selectedTaskId, TaskGUI.WindowType.VIEW).start(mainGUI);
         }else if (mouseEvent.getButton() == MouseButton.SECONDARY){
-            taskContextMenu.menuItemFinish.setDisable(Data.Tasks.taskList.get(selectedTaskId).isDone());
+            boolean showDoneMenu;
+            Task selectedTask = Data.Tasks.taskList.get(selectedTaskId);
+            if (selectedTask instanceof RepeatTask){
+                showDoneMenu = LocalDateTime.now().isAfter(selectedTask.getExpireDate());
+            }else{
+                showDoneMenu = !selectedTask.isDone();
+            }
+            taskContextMenu.menuItemFinish.setDisable(!showDoneMenu);
+
             taskContextMenu.show(lstTasks, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         }
     }

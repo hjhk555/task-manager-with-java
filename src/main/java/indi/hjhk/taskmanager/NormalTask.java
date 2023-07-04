@@ -15,8 +15,7 @@ public class NormalTask extends Task{
 
     @Override
     public Task clone() {
-        NormalTask newTask = new NormalTask();
-        newTask.cloneSharedFrom(this);
+        NormalTask newTask = (NormalTask) super.clone();
         newTask.done = done;
         newTask.expireDate = expireDate;
         return newTask;

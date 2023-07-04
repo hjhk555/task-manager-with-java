@@ -3,7 +3,6 @@ package indi.hjhk.taskmanager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -41,30 +40,32 @@ public abstract class Task{
         if (daysLeft < Data.Config.ALERT_LEVEL3_THRESHOLD) return "★★★";
         if (daysLeft < Data.Config.ALERT_LEVEL2_THRESHOLD) return "★★";
         if (daysLeft < Data.Config.ALERT_LEVEL1_THRESHOLD) return "★";
-        return "";
+        return "✘";
     }
 
     public static ObservableList<String> getTaskTypeList(){
         ObservableList<String> taskTypeList = FXCollections.observableArrayList();
         taskTypeList.add(NormalTask.TASK_TYPE_SEQ, NormalTask.TASK_TYPE_NAME);
         taskTypeList.add(UnlimitedTask.TASK_TYPE_SEQ, UnlimitedTask.TASK_TYPE_NAME);
+        taskTypeList.add(DailyTask.TASK_TYPE_SEQ, DailyTask.TASK_TYPE_NAME);
+        taskTypeList.add(WeeklyTask.TASK_TYPE_SEQ, WeeklyTask.TASK_TYPE_NAME);
         return taskTypeList;
     }
 
-    public void cloneSharedFrom(Task from){
-        title = from.title;
-        content = from.content;
-        isAlerted = from.isAlerted;
+    public static Task newTypedTask(int seq){
+        return switch (seq){
+            case NormalTask.TASK_TYPE_SEQ -> new NormalTask();
+            case UnlimitedTask.TASK_TYPE_SEQ -> new UnlimitedTask();
+            case DailyTask.TASK_TYPE_SEQ -> new DailyTask();
+            case WeeklyTask.TASK_TYPE_SEQ -> new WeeklyTask();
+            default -> null;
+        };
     }
 
     public static Task readTaskExternal(ObjectInput in){
         try{
             int typeSeq = in.readInt();
-            Task newTask = switch (typeSeq){
-                case NormalTask.TASK_TYPE_SEQ -> new NormalTask();
-                case UnlimitedTask.TASK_TYPE_SEQ -> new UnlimitedTask();
-                default -> null;
-            };
+            Task newTask = newTypedTask(typeSeq);
             if (newTask == null) return null;
             newTask.readExternal(in);
             return newTask;
@@ -85,7 +86,14 @@ public abstract class Task{
         isAlerted = in.readBoolean();
     }
 
-    public abstract Task clone();
+    public Task clone(){
+        Task newTask = newTypedTask(getTypeSeq());
+        newTask.title = title;
+        newTask.content = content;
+        newTask.isAlerted = isAlerted;
+        return newTask;
+    }
+
     public abstract String toString(LocalDateTime curTime);
     public abstract void finish();
     public abstract boolean isDone();

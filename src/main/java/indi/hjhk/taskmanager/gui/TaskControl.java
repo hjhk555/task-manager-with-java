@@ -1,9 +1,6 @@
 package indi.hjhk.taskmanager.gui;
 
-import indi.hjhk.taskmanager.Data;
-import indi.hjhk.taskmanager.NormalTask;
-import indi.hjhk.taskmanager.Task;
-import indi.hjhk.taskmanager.UnlimitedTask;
+import indi.hjhk.taskmanager.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -30,6 +27,13 @@ public class TaskControl {
     public DatePicker dateNormal;
     public ChoiceBox<Integer> selNormalHour;
     public ChoiceBox<Integer> selNormalMinute;
+    public AnchorPane paneDailyTask;
+    public ChoiceBox<Integer> selDailyHour;
+    public ChoiceBox<Integer> selDailyMinute;
+    public AnchorPane paneWeeklyTask;
+    public ChoiceBox<Integer> selWeeklyHour;
+    public ChoiceBox<Integer> selWeeklyMinute;
+    public ChoiceBox<String> selWeeklyDayOfWeek;
     private TaskGUI taskGUI;
 
     public void init(TaskGUI taskGUI){
@@ -39,14 +43,20 @@ public class TaskControl {
         paneTypedTask.getChildren().forEach(node -> node.setVisible(true));
         paneTypedTask.getChildren().clear();
 
-        ObservableList<Integer> hourList = FXCollections.observableArrayList(IntStream.range(0, 24).boxed().collect(Collectors.toList()));
-        selNormalHour.setItems(hourList);
+        selNormalHour.setItems(Data.Constants.hourList);
+        selDailyHour.setItems(Data.Constants.hourList);
+        selWeeklyHour.setItems(Data.Constants.hourList);
 
-        ObservableList<Integer> minuteList = FXCollections.observableArrayList(IntStream.range(0, 60).boxed().collect(Collectors.toList()));
-        selNormalMinute.setItems(minuteList);
+        selNormalMinute.setItems(Data.Constants.minuteList);
+        selDailyMinute.setItems(Data.Constants.minuteList);
+        selWeeklyMinute.setItems(Data.Constants.minuteList);
+
+        selWeeklyDayOfWeek.setItems(Data.Constants.dayOfWeekName);
 
         setNormalTaskPaneContent(null);
         setUnlimitedTaskPaneContent(null);
+        setDailyTaskPaneContent(null);
+        setWeeklyTaskPaneContent(null);
     }
 
     public void setReadOnly(boolean readOnly){
@@ -70,6 +80,10 @@ public class TaskControl {
             setNormalTaskPaneContent(normalTask);
         else if (task instanceof UnlimitedTask unlimitedTask)
             setUnlimitedTaskPaneContent(unlimitedTask);
+        else if (task instanceof DailyTask dailyTask)
+            setDailyTaskPaneContent(dailyTask);
+        else if (task instanceof WeeklyTask weeklyTask)
+            setWeeklyTaskPaneContent(weeklyTask);
     }
 
     public void switchTaskPane(int taskTypeSeq){
@@ -78,6 +92,8 @@ public class TaskControl {
         Pane shownPane = switch (taskTypeSeq){
             case NormalTask.TASK_TYPE_SEQ -> switchNormalTaskPane();
             case UnlimitedTask.TASK_TYPE_SEQ -> switchUnlimitedTaskPane();
+            case DailyTask.TASK_TYPE_SEQ -> switchDailyTaskPane();
+            case WeeklyTask.TASK_TYPE_SEQ -> switchWeeklyTaskPane();
             default -> null;
         };
 
@@ -109,6 +125,38 @@ public class TaskControl {
     public void setUnlimitedTaskPaneContent(UnlimitedTask task){
     }
 
+    public Pane switchDailyTaskPane(){
+        chkTaskDone.setVisible(false);
+        return paneDailyTask;
+    }
+
+    public void setDailyTaskPaneContent(DailyTask task){
+        if (task == null){
+            selDailyHour.getSelectionModel().select(0);
+            selDailyMinute.getSelectionModel().select(0);
+        }else {
+            selDailyHour.getSelectionModel().select(task.repeatTime.getHour());
+            selDailyMinute.getSelectionModel().select(task.repeatTime.getMinute());
+        }
+    }
+
+    public Pane switchWeeklyTaskPane(){
+        chkTaskDone.setVisible(false);
+        return paneWeeklyTask;
+    }
+
+    public void setWeeklyTaskPaneContent(WeeklyTask task){
+        if (task == null){
+            selWeeklyDayOfWeek.getSelectionModel().select(0);
+            selWeeklyHour.getSelectionModel().select(0);
+            selWeeklyMinute.getSelectionModel().select(0);
+        }else{
+            selWeeklyDayOfWeek.getSelectionModel().select(task.getDayOfWeek()-1);
+            selWeeklyHour.getSelectionModel().select(task.repeatTime.getHour());
+            selWeeklyMinute.getSelectionModel().select(task.repeatTime.getMinute());
+        }
+    }
+
     public void btnConfirm_clicked(ActionEvent actionEvent) {
         if (txtTitle.getText().length() == 0){
             Data.Alert.getIconedAlert(Alert.AlertType.ERROR, "任务名称不得为空").showAndWait();
@@ -128,6 +176,19 @@ public class TaskControl {
                 UnlimitedTask confirmedUnlimitedTask = new UnlimitedTask();
                 confirmedUnlimitedTask.done = chkTaskDone.isSelected();
                 confirmedTask = confirmedUnlimitedTask;
+            }
+            case DailyTask.TASK_TYPE_SEQ -> {
+                DailyTask confirmedDailyTask = new DailyTask();
+                confirmedDailyTask.repeatTime = LocalTime.of(selDailyHour.getSelectionModel().getSelectedIndex(),
+                        selDailyMinute.getSelectionModel().getSelectedIndex());
+                confirmedTask = confirmedDailyTask;
+            }
+            case WeeklyTask.TASK_TYPE_SEQ -> {
+                WeeklyTask confirmedWeeklyTask = new WeeklyTask();
+                confirmedWeeklyTask.setDayOfWeek(selWeeklyDayOfWeek.getSelectionModel().getSelectedIndex()+1);
+                confirmedWeeklyTask.repeatTime = LocalTime.of(selWeeklyHour.getSelectionModel().getSelectedIndex(),
+                        selWeeklyMinute.getSelectionModel().getSelectedIndex());
+                confirmedTask = confirmedWeeklyTask;
             }
             default -> {
                 Data.Alert.getIconedAlert(Alert.AlertType.ERROR, "未知的任务类型").showAndWait();
