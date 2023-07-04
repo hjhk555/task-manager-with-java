@@ -58,13 +58,13 @@ public class UnlimitedTask extends Task{
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        writeSharedExternal(out);
+        super.writeExternal(out);
         out.writeBoolean(done);
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        readSharedExternal(in);
+        super.readExternal(in);
         done = in.readBoolean();
     }
 }

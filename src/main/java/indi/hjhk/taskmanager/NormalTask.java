@@ -61,14 +61,14 @@ public class NormalTask extends Task{
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        writeSharedExternal(out);
+        super.writeExternal(out);
         out.writeBoolean(done);
         out.writeObject(expireDate);
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        readSharedExternal(in);
+        super.readExternal(in);
         done = in.readBoolean();
         expireDate = (LocalDateTime) in.readObject();
     }

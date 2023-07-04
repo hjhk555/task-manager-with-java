@@ -109,8 +109,10 @@ public class Data {
                 MathUtils.setCode(taskSize);
                 objectOutputStream.writeInt(taskSize);
                 for (Task task : taskList)
-                    if (task != null)
+                    if (task != null) {
+                        objectOutputStream.writeInt(task.getTypeSeq());
                         task.writeExternal(objectOutputStream);
+                    }
                 objectOutputStream.close();
             } catch (IOException ignored) {
             }

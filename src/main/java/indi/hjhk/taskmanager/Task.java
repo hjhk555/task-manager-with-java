@@ -73,21 +73,18 @@ public abstract class Task{
         }
     }
 
-    public void writeSharedExternal(ObjectOutput out) throws IOException {
-        out.writeInt(getTypeSeq());
+    public void writeExternal(ObjectOutput out) throws IOException {
         MathUtils.writeEncodedString(title, out);
         MathUtils.writeEncodedString(content, out);
         out.writeBoolean(isAlerted);
     }
 
-    public void readSharedExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         title = MathUtils.readEncodeedString(in);
         content = MathUtils.readEncodeedString(in);
         isAlerted = in.readBoolean();
     }
 
-    public abstract void readExternal(ObjectInput in) throws IOException, ClassNotFoundException;
-    public abstract void writeExternal(ObjectOutput out) throws IOException;
     public abstract Task clone();
     public abstract String toString(LocalDateTime curTime);
     public abstract void finish();
