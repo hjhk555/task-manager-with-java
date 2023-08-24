@@ -31,24 +31,35 @@ public class TimedTrigger implements Runnable {
 
     @Override
     public void run() {
+        long callTime;
+        long curTime = System.currentTimeMillis();
+        if (aligned) {
+            callTime = (curTime /interval +1) *interval;
+        } else {
+            callTime = curTime +interval;
+        }
+
         while (!Thread.interrupted() && repeats != 0){
+            curTime = System.currentTimeMillis();
             try {
-                if (aligned) {
-                    Thread.sleep(interval - System.currentTimeMillis() % interval);
-                } else {
-                    Thread.sleep(interval);
-                }
+                if (callTime > curTime) Thread.sleep(callTime - curTime);
             }catch (InterruptedException e){
                 return;
             }
 
-            LocalDateTime curTime = LocalDateTime.now();
+            curTime = System.currentTimeMillis();
+            if (callTime <= curTime) {
+                for (TimedCall timedCall : timedCalls) {
+                    timedCall.call();
+                }
+                if (repeats > 0) repeats--;
 
-            for (TimedCall timedCall: timedCalls){
-                timedCall.call(curTime);
+                if (aligned){
+                    callTime = callTime + interval;
+                }else{
+                    callTime = curTime + interval;
+                }
             }
-
-            if (repeats>0) repeats--;
         }
     }
 }

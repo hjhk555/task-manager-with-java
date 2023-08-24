@@ -29,12 +29,12 @@ public class UnlimitedTask extends Task{
     }
 
     @Override
-    public String getCompletionTag(LocalDateTime curTime) {
+    public String getCompletionTag() {
         return done ? "[✔已完成]" : "[✘未完成]";
     }
 
     @Override
-    public String getExpireDateTag(LocalDateTime curTime) {
+    public String getExpireDateTag() {
         return "[无时限]";
     }
 

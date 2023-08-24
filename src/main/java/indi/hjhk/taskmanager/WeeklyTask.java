@@ -48,7 +48,7 @@ public class WeeklyTask extends RepeatTask{
     }
 
     @Override
-    public String getExpireDateTag(LocalDateTime curTime) {
+    public String getExpireDateTag() {
         return String.format("[%s%s更新]", Data.Constants.dayOfWeekName.get(dayOfWeek-1), TIME_FORMATTER.format(repeatTime));
     }
 

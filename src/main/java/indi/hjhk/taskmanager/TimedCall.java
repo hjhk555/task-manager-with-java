@@ -4,5 +4,5 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 public interface TimedCall {
-    void call(LocalDateTime dateTime);
+    void call();
 }

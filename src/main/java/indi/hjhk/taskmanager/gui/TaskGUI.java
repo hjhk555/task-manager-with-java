@@ -64,18 +64,21 @@ public class TaskGUI{
         }
 
         stage.setScene(taskScene);
-        stage.showAndWait();
+        stage.show();
+
+        stage.setMinHeight(stage.getHeight());
+        stage.setMinWidth(stage.getWidth());
     }
 
     public void handleConfirmedTask(Task newTask){
         switch (windowType){
             case CREATE -> {
                 Data.Tasks.addTask(newTask);
-                mainGUI.updateAll(LocalDateTime.now());
+                mainGUI.updateAll();
             }
             case UPDATE -> {
                 Data.Tasks.updateTask(taskId, newTask);
-                mainGUI.updateAll(LocalDateTime.now());
+                mainGUI.updateAll();
             }
         }
     }

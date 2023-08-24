@@ -6,7 +6,7 @@ import java.io.ObjectOutput;
 import java.time.LocalDateTime;
 
 public abstract class RepeatTask extends Task{
-    public LocalDateTime doneTime = LocalDateTime.now();
+    public LocalDateTime doneTime = Data.curTime;
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
@@ -21,8 +21,8 @@ public abstract class RepeatTask extends Task{
     }
 
     @Override
-    public String getCompletionTag(LocalDateTime curTime) {
-        return curTime.isAfter(getExpireDate()) ? "[✘未完成]" : "[\uD83D\uDD04已完成]";
+    public String getCompletionTag() {
+        return !Data.curTime.isBefore(getExpireDate()) ? "[✘未完成]" : "[\uD83D\uDD04已完成]";
     }
 
     @Override
@@ -34,6 +34,6 @@ public abstract class RepeatTask extends Task{
 
     @Override
     public void finish() {
-        doneTime = LocalDateTime.now();
+        doneTime = Data.getCurrentTimeToMinute();;
     }
 }

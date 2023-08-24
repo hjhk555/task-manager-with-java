@@ -107,7 +107,7 @@ public class TaskControl {
 
     public void setNormalTaskPaneContent(NormalTask task){
         if (task == null) {
-            dateNormal.setValue(LocalDate.now());
+            dateNormal.setValue(Data.curTime.toLocalDate());
             selNormalHour.getSelectionModel().select(0);
             selNormalMinute.getSelectionModel().select(0);
         }else{

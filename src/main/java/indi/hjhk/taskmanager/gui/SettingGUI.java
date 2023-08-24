@@ -29,6 +29,9 @@ public class SettingGUI {
 
         stage.setTitle("设置");
         stage.setScene(settingScene);
-        stage.showAndWait();
+        stage.show();
+
+        stage.setMinHeight(stage.getHeight());
+        stage.setMinWidth(stage.getWidth());
     }
 }

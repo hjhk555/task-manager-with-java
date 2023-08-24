@@ -19,7 +19,7 @@ public class DailyTask extends RepeatTask{
     }
 
     @Override
-    public String getExpireDateTag(LocalDateTime curTime) {
+    public String getExpireDateTag() {
         return String.format("[每天%s更新]", TIME_FORMATTER.format(repeatTime));
     }
 

@@ -34,9 +34,9 @@ public abstract class Task{
         }
     };
 
-    protected static String getEmergeTag(LocalDateTime curTime, LocalDateTime expireDate){
-        if (expireDate.isBefore(curTime)) return "⚠⚠⚠";
-        long daysLeft = Duration.between(curTime, expireDate).toDays();
+    protected static String getEmergeTag(LocalDateTime expireDate){
+        if (!expireDate.isAfter(Data.curTime)) return "⚠⚠⚠";
+        long daysLeft = Duration.between(Data.curTime, expireDate).toDays();
         if (daysLeft < Data.Config.ALERT_LEVEL3_THRESHOLD) return "★★★";
         if (daysLeft < Data.Config.ALERT_LEVEL2_THRESHOLD) return "★★";
         if (daysLeft < Data.Config.ALERT_LEVEL1_THRESHOLD) return "★";
@@ -94,18 +94,18 @@ public abstract class Task{
         return newTask;
     }
 
-    public String toString(LocalDateTime curTime){
+    public String toString(){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(getCompletionTag(curTime));
+        stringBuilder.append(getCompletionTag());
         if (!isAlerted) stringBuilder.append("[勿扰]");
-        if (!isDone()) stringBuilder.append(getExpireDateTag(curTime));
+        if (!isDone()) stringBuilder.append(getExpireDateTag());
         stringBuilder.append(title);
         return stringBuilder.toString();
     }
     public abstract void finish();
     public abstract boolean isDone();
-    public abstract String getCompletionTag(LocalDateTime curTime);
-    public abstract String getExpireDateTag(LocalDateTime curTime);
+    public abstract String getCompletionTag();
+    public abstract String getExpireDateTag();
     public abstract LocalDateTime getExpireDate();
     public abstract String getTypeName();
     public abstract int getTypeSeq();

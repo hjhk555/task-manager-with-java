@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -20,6 +21,12 @@ public class Data {
     public static String appVersion = "1.1.0";
     public static String appPubDate = "2023/7/4";
     public static String appInfo = "制作人：黄嘉铧\n版本："+appVersion+"\n发行日期："+appPubDate;
+    public static LocalDateTime curTime = getCurrentTimeToMinute();
+
+    public static LocalDateTime getCurrentTimeToMinute(){
+        LocalDateTime curTime = LocalDateTime.now();
+        return LocalDateTime.of(curTime.toLocalDate(), LocalTime.of(curTime.getHour(), curTime.getMinute()));
+    }
 
     public static class Constants{
         public static final ObservableList<String> dayOfWeekName = FXCollections.observableArrayList("星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日");
@@ -126,7 +133,7 @@ public class Data {
             }
         }
 
-        public static ObservableList<IdentifiedString> getSortedTaskInfo(LocalDateTime curTime){
+        public static ObservableList<IdentifiedString> getSortedTaskInfo(){
             ArrayList<IdentifiedTask> sortedList = new ArrayList<>();
             for (int i=0; i<taskList.size(); i++){
                 Task task = taskList.get(i);
@@ -135,7 +142,7 @@ public class Data {
             sortedList.sort(IdentifiedTask.comparator);
             ObservableList<IdentifiedString> taskInfo = FXCollections.observableArrayList();
             for (IdentifiedTask identifiedTask: sortedList)
-                taskInfo.add(new IdentifiedString(identifiedTask.id, identifiedTask.task.toString(curTime)));
+                taskInfo.add(new IdentifiedString(identifiedTask.id, identifiedTask.task.toString()));
             return taskInfo;
         }
 
@@ -145,12 +152,12 @@ public class Data {
             public boolean requireAlert = false;
         }
 
-        public static EmergeTaskList getEmergeTaskList(LocalDateTime curTime){
+        public static EmergeTaskList getEmergeTaskList(){
             EmergeTaskList emergeTaskList = new EmergeTaskList();
             for (Task task : taskList){
                 if (task == null || task.isDone()) continue;
                 LocalDateTime expiredDate = task.getExpireDate();
-                if (expiredDate.isBefore(curTime)){
+                if (!expiredDate.isAfter(curTime)){
                     emergeTaskList.exceedTasks.add(task);
                     if (task.isAlerted) emergeTaskList.requireAlert = true;
                 }else if (!(task instanceof RepeatTask) && Duration.between(curTime, expiredDate).toDays() < Config.ALERT_LEVEL2_THRESHOLD)
@@ -173,41 +180,41 @@ public class Data {
         public static ActiveStatus activeStatus;
 
         static {
-            activeStartTime = LocalDateTime.now();
-            leaveStartTime = LocalDateTime.now();
+            activeStartTime = curTime;
+            leaveStartTime = curTime;
             activeStatus = ActiveStatus.LEFT;
         }
 
-        public static void updateCursor(MainGUI app, LocalDateTime dateTime, int curX, int curY) {
+        public static void updateCursor(MainGUI app, int curX, int curY) {
             int diffX = preCursorX - curX;
             int diffY = preCursorY - curY;
             if (diffX < -Config.CURSOR_DIFF || diffY < -Config.CURSOR_DIFF || diffX > Config.CURSOR_DIFF || diffY > Config.CURSOR_DIFF){
                 // active
-                leaveStartTime = dateTime;
+                leaveStartTime = curTime;
                 switch (activeStatus){
                     case LEAVING -> {
                         activeStatus = ActiveStatus.ACTIVE;
-                        app.updateActiveMsg(dateTime);
+                        app.updateActiveMsg();
                     }
                     case LEFT -> {
                         activeStatus = ActiveStatus.ACTIVE;
-                        activeStartTime = dateTime;
-                        app.updateActiveMsg(dateTime);
+                        activeStartTime = curTime;
+                        app.updateActiveMsg();
                     }
                 }
             }else{
                 // leave
                 switch (activeStatus){
                     case ACTIVE -> {
-                        if (Duration.between(leaveStartTime, dateTime).toMinutes() > 0){
+                        if (Duration.between(leaveStartTime, curTime).toMinutes() > 0){
                             activeStatus = ActiveStatus.LEAVING;
-                            app.updateActiveMsg(dateTime);
+                            app.updateActiveMsg();
                         }
                     }
                     case LEAVING -> {
-                        if (Duration.between(leaveStartTime, dateTime).toMinutes() >= Config.LEAVE_THRESHOLD){
+                        if (Duration.between(leaveStartTime, curTime).toMinutes() >= Config.LEAVE_THRESHOLD){
                             activeStatus = ActiveStatus.LEFT;
-                            app.updateActiveMsg(dateTime);
+                            app.updateActiveMsg();
                         }
                     }
                 }
@@ -216,7 +223,7 @@ public class Data {
             preCursorY = curY;
         }
 
-        public static long getActiveMinutes(LocalDateTime curTime){
+        public static long getActiveMinutes(){
             if (activeStatus != ActiveStatus.ACTIVE) return 0L;
             return Duration.between(activeStartTime, curTime).toMinutes();
         }
@@ -263,9 +270,9 @@ public class Data {
     public static class Alert{
         public static boolean isAlertActive = false;
         public static boolean pauseAlert = false;
-        public static LocalDateTime pauseStart;
-        public static LocalDateTime alertStart;
-        public static LocalDateTime lastAlert;
+        public static LocalDateTime pauseStart = LocalDateTime.MIN;
+        public static LocalDateTime alertStart = LocalDateTime.MIN;
+        public static LocalDateTime lastAlert = LocalDateTime.MIN;
         public static javafx.scene.control.Alert curAlert = null;
 
         public static javafx.scene.control.Alert getIconedAlert(javafx.scene.control.Alert.AlertType alertType, String content){
@@ -274,7 +281,7 @@ public class Data {
             return newAlert;
         }
 
-        public static long getPauseMinutesLeft(LocalDateTime curTime){
+        public static long getPauseMinutesLeft(){
             return Config.PAUSE_LENGTH - Duration.between(pauseStart, curTime).toMinutes();
         }
 

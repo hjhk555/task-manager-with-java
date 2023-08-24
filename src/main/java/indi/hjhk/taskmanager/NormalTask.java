@@ -32,12 +32,12 @@ public class NormalTask extends Task{
     }
 
     @Override
-    public String getCompletionTag(LocalDateTime curTime) {
-        return done ? "[✔已完成]" : String.format("[%s未完成]", getEmergeTag(curTime, expireDate));
+    public String getCompletionTag() {
+        return done ? "[✔已完成]" : String.format("[%s未完成]", getEmergeTag(expireDate));
     }
 
     @Override
-    public String getExpireDateTag(LocalDateTime curTime) {
+    public String getExpireDateTag() {
         return String.format("[%s到期]", DATE_FORMAT.format(expireDate));
     }
 

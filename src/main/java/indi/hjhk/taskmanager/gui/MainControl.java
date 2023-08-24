@@ -44,7 +44,7 @@ public class MainControl {
             boolean showDoneMenu;
             Task selectedTask = Data.Tasks.taskList.get(selectedTaskId);
             if (selectedTask instanceof RepeatTask){
-                showDoneMenu = LocalDateTime.now().isAfter(selectedTask.getExpireDate());
+                showDoneMenu = !Data.curTime.isBefore(selectedTask.getExpireDate());
             }else{
                 showDoneMenu = !selectedTask.isDone();
             }
@@ -55,20 +55,22 @@ public class MainControl {
     }
 
     public void btnPause_mouseClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton() == MouseButton.PRIMARY) switchAlert();
+        if (mouseEvent.getButton() == MouseButton.PRIMARY) switchAlert(true);
     }
 
-    public void switchAlert(){
+    public void switchAlert(boolean update){
         if (!Data.Alert.pauseAlert){
             Data.Alert.closeAlert();
             Data.Alert.pauseAlert = true;
-            Data.Alert.pauseStart = LocalDateTime.now();
+            Data.Alert.pauseStart = Data.curTime;
             btnPause.setText("恢复警报");
+            System.out.println("alert paused");
         }else{
             Data.Alert.pauseAlert = false;
             btnPause.setText("暂停警报");
+            System.out.println("alert resumed");
         }
-        mainGUI.updateAll(LocalDateTime.now());
+        if (update) mainGUI.updateAll();
     }
 
     public void menuSetting_selected(ActionEvent actionEvent) {
@@ -85,12 +87,12 @@ public class MainControl {
 
     public void menuUndo_clicked(ActionEvent actionEvent) {
         if (Data.History.undo())
-            mainGUI.updateAll(LocalDateTime.now());
+            mainGUI.updateAll();
     }
 
     public void menuRedo_clicked(ActionEvent actionEvent) {
         if (Data.History.redo())
-            mainGUI.updateAll(LocalDateTime.now());
+            mainGUI.updateAll();
     }
 
     public void btnAbout_clicked(ActionEvent actionEvent) {

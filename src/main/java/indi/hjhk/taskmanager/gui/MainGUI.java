@@ -62,34 +62,38 @@ public class MainGUI extends Application {
         controller = fxmlLoader.getController();
         controller.init(this);
 
-        updateAll(LocalDateTime.now());
+        updateAll();
 
         TimedTrigger alignedMinuteTrigger = new TimedTrigger(-1, 60000, true);
-        alignedMinuteTrigger.registerCall(dateTime -> Platform.runLater(() -> updateAll(dateTime)));
+        alignedMinuteTrigger.registerCall(() -> Platform.runLater(this::updateAll));
         startThread(alignedMinuteTrigger);
 
         TimedTrigger secondTrigger = new TimedTrigger(-1, 1000, false);
-        secondTrigger.registerCall(dateTime -> Platform.runLater(() -> Data.Active.updateCursor(this, dateTime, (int) robot.getMouseX(), (int) robot.getMouseY())));
+        secondTrigger.registerCall(() -> Platform.runLater(() -> Data.Active.updateCursor(this, (int) robot.getMouseX(), (int) robot.getMouseY())));
         startThread(secondTrigger);
 
         stage.setTitle("任务管理器");
         stage.setScene(mainScene);
         stage.show();
+
+        stage.setMinHeight(stage.getHeight());
+        stage.setMinWidth(stage.getWidth());
     }
 
     public void onConfigChange(){
-        LocalDateTime curTime = LocalDateTime.now();
         Data.Alert.closeAlert();
-        updateAll(curTime);
+        updateAll();
     }
 
-    public void updateAll(LocalDateTime curTime){
-        controller.lblCurTime.setText(DATE_FORMAT.format(curTime));
-        controller.lstTasks.setItems(Data.Tasks.getSortedTaskInfo(curTime));
-        Data.Tasks.EmergeTaskList emergeTaskList = Data.Tasks.getEmergeTaskList(curTime);
-        checkAndPerformAlert(curTime, emergeTaskList);
-        updateActiveMsg(curTime);
-        updateTaskMsg(curTime, emergeTaskList);
+    public void updateAll(){
+        Data.curTime = Data.getCurrentTimeToMinute();
+        System.out.println("Data.curTime update to "+Data.curTime);
+        controller.lblCurTime.setText(DATE_FORMAT.format(Data.curTime));
+        controller.lstTasks.setItems(Data.Tasks.getSortedTaskInfo());
+        Data.Tasks.EmergeTaskList emergeTaskList = Data.Tasks.getEmergeTaskList();
+        checkAndPerformAlert(emergeTaskList);
+        updateActiveMsg();
+        updateTaskMsg(emergeTaskList);
         updateUI();
     }
 
@@ -98,27 +102,29 @@ public class MainGUI extends Application {
         controller.menuRedo.setDisable(!Data.History.canRedo());
     }
 
-    public void checkAndPerformAlert(LocalDateTime curTIme, Data.Tasks.EmergeTaskList emergeTaskList){
+    public void checkAndPerformAlert(Data.Tasks.EmergeTaskList emergeTaskList){
         if (Data.Alert.pauseAlert){
-            if (Data.Alert.getPauseMinutesLeft(curTIme) <= 0){
-                controller.switchAlert();
+            if (Data.Alert.getPauseMinutesLeft() <= 0){
+                controller.switchAlert(false);
             }else return;
         }
         // check alert
-        long activeMinutes = Data.Active.getActiveMinutes(curTIme);
+        long activeMinutes = Data.Active.getActiveMinutes();
         boolean activeExceed = Data.Active.activeStatus == Data.Active.ActiveStatus.ACTIVE &&
                                 activeMinutes >= Data.Config.ACTIVE_THRESHOLD;
         boolean requireAlert = activeExceed || emergeTaskList.requireAlert;
         if (requireAlert){
-            if (!Data.Alert.isAlertActive || Duration.between(Data.Alert.lastAlert, curTIme).toMinutes() >= Data.Config.ALERT_INTERVAL){
+            long alertInterval = Duration.between(Data.Alert.lastAlert, Data.curTime).toMinutes();
+            System.out.println("alertInterval: "+alertInterval);
+            if (!Data.Alert.isAlertActive || alertInterval >= Data.Config.ALERT_INTERVAL){
                 // trigger alert
                 if (!Data.Alert.isAlertActive){
-                    Data.Alert.alertStart = curTIme;
+                    Data.Alert.alertStart = Data.curTime;
                     Data.Alert.isAlertActive = true;
                 }
                 StringBuilder stringBuilder = new StringBuilder();
                 if (emergeTaskList.requireAlert) {
-                    stringBuilder.append("以下任务已逾期:\n");
+                    stringBuilder.append("以下任务已到期:\n");
                     for (Task task : emergeTaskList.exceedTasks) {
                         if (task.isAlerted)
                             stringBuilder.append("    ").append(task.title).append("\n");
@@ -137,23 +143,26 @@ public class MainGUI extends Application {
                 newAlert.setTitle("警报");
                 newAlert.setHeaderText(String.format("来自任务管理器的警报\n\t%s ~ %s",
                         TIME_FORMAT.format(Data.Alert.alertStart),
-                        TIME_FORMAT.format(curTIme)));
+                        TIME_FORMAT.format(Data.curTime)));
                 Data.Alert.setAlertAlwaysOnTop(newAlert);
                 Data.Alert.setAlertConcurrent(newAlert);
                 newAlert.show();
 
                 Data.Alert.curAlert = newAlert;
-                Data.Alert.lastAlert = curTIme;
+                Data.Alert.lastAlert = Data.curTime;
+                System.out.println("alert shown");
             }
         }else{
             Data.Alert.closeAlert();
             // remove alert flag
-            if (Data.Active.activeStatus != Data.Active.ActiveStatus.LEAVING)
+            if (Data.Active.activeStatus != Data.Active.ActiveStatus.LEAVING) {
+                System.out.println("alert flag removed");
                 Data.Alert.isAlertActive = false;
+            }
         }
     }
 
-    public void updateActiveMsg(LocalDateTime curTime){
+    public void updateActiveMsg(){
         switch (Data.Active.activeStatus){
             case LEFT -> {
                 controller.lblActiveMsg.setTextFill(Color.GREEN);
@@ -161,10 +170,10 @@ public class MainGUI extends Application {
             }
             case LEAVING -> {
                 controller.lblActiveMsg.setTextFill(Color.OLIVE);
-                controller.lblActiveMsg.setText(String.format("已离开计算机%d分钟", Duration.between(Data.Active.leaveStartTime, curTime).toMinutes()));
+                controller.lblActiveMsg.setText(String.format("已离开计算机%d分钟", Duration.between(Data.Active.leaveStartTime, Data.curTime).toMinutes()));
             }
             case ACTIVE -> {
-                long activeMinutes = Data.Active.getActiveMinutes(curTime);
+                long activeMinutes = Data.Active.getActiveMinutes();
                 if (activeMinutes < Data.Config.ACTIVE_THRESHOLD){
                     controller.lblActiveMsg.setTextFill(Color.DARKORANGE);
                 }else{
@@ -175,9 +184,9 @@ public class MainGUI extends Application {
         }
     }
 
-    public void updateTaskMsg(LocalDateTime curTime, Data.Tasks.EmergeTaskList emergeTaskList){
+    public void updateTaskMsg(Data.Tasks.EmergeTaskList emergeTaskList){
         if (Data.Alert.pauseAlert){
-            controller.lblTaskMsg.setText(String.format("警报已暂停，将在%d分钟后恢复", Data.Alert.getPauseMinutesLeft(curTime)));
+            controller.lblTaskMsg.setText(String.format("警报已暂停，将在%d分钟后恢复", Data.Alert.getPauseMinutesLeft()));
             controller.lblTaskMsg.setTextFill(Color.DARKORANGE);
         }else{
             int exceeds = emergeTaskList.exceedTasks.size();
@@ -205,14 +214,14 @@ public class MainGUI extends Application {
         Task newTask = oldTask.clone();
         newTask.finish();
         Data.Tasks.updateTask(selectedTaskId, newTask);
-        updateAll(LocalDateTime.now());
+        updateAll();
     }
 
     public void deleteSelectedTask(){
         int selectedTaskId = controller.getSelectedTaskId();
         if (selectedTaskId < 0) return;
         Data.Tasks.removeTask(selectedTaskId);
-        updateAll(LocalDateTime.now());
+        updateAll();
     }
 
     public void updateSelectedTask(){
