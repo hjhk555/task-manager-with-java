@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -133,7 +134,7 @@ public class Data {
             }
         }
 
-        public static ObservableList<IdentifiedString> getSortedTaskInfo(){
+        public static ObservableList<IdentifiedString> getSortedTaskInfo(List<Task> taskList){
             ArrayList<IdentifiedTask> sortedList = new ArrayList<>();
             for (int i=0; i<taskList.size(); i++){
                 Task task = taskList.get(i);

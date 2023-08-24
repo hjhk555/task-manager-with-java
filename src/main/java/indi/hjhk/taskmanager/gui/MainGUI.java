@@ -89,7 +89,7 @@ public class MainGUI extends Application {
         Data.curTime = Data.getCurrentTimeToMinute();
         System.out.println("Data.curTime update to "+Data.curTime);
         controller.lblCurTime.setText(DATE_FORMAT.format(Data.curTime));
-        controller.lstTasks.setItems(Data.Tasks.getSortedTaskInfo());
+        controller.lstTasks.setItems(Data.Tasks.getSortedTaskInfo(Data.Tasks.taskList));
         Data.Tasks.EmergeTaskList emergeTaskList = Data.Tasks.getEmergeTaskList();
         checkAndPerformAlert(emergeTaskList);
         updateActiveMsg();
