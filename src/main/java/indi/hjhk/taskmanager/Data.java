@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Data {
-    public static String appVersion = "1.1.0";
-    public static String appPubDate = "2023/7/4";
+    public static String appVersion = "1.1.1";
+    public static String appPubDate = "2023/8/29";
     public static String appInfo = "制作人：黄嘉铧\n版本："+appVersion+"\n发行日期："+appPubDate;
     public static LocalDateTime curTime = getCurrentTimeToMinute();
 
