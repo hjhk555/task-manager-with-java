@@ -115,7 +115,7 @@ public class MainControl {
     public void menuWriteTlist_clicked(ActionEvent actionEvent) {
         FileChooser writeFileChooser = new FileChooser();
         writeFileChooser.setInitialDirectory(Data.Constants.userDesktop);
-        writeFileChooser.setInitialFileName(Data.Tasks.taskFileName);
+        writeFileChooser.setInitialFileName(Data.Config.DEFAULT_EXPORT_FILENAME+Data.Tasks.taskFileSuffix);
         writeFileChooser.getExtensionFilters().addAll(Data.Constants.taskListFilter, Data.Constants.defaultFilter);
         File writeFile = writeFileChooser.showSaveDialog(mainGUI.mainScene.getWindow());
         if (writeFile != null) Data.Tasks.writeTasksToFile(writeFile.getPath());

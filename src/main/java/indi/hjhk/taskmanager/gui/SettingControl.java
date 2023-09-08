@@ -17,6 +17,7 @@ public class SettingControl {
     public TextField txtLevel1Threshold;
     public TextField txtLevel2Threshold;
     public TextField txtLevel3Threshold;
+    public TextField txtDefaultExportFilename;
     private SettingGUI settingGUI;
     public void init(SettingGUI settingGUI){
         this.settingGUI = settingGUI;
@@ -38,6 +39,7 @@ public class SettingControl {
         txtLevel1Threshold.setText(String.valueOf(Data.Config.ALERT_LEVEL1_THRESHOLD));
         txtLevel2Threshold.setText(String.valueOf(Data.Config.ALERT_LEVEL2_THRESHOLD));
         txtLevel3Threshold.setText(String.valueOf(Data.Config.ALERT_LEVEL3_THRESHOLD));
+        txtDefaultExportFilename.setText(Data.Config.DEFAULT_EXPORT_FILENAME);
     }
 
     public void btnCancel_clicked(ActionEvent actionEvent) {
@@ -63,6 +65,7 @@ public class SettingControl {
             Data.Config.ALERT_LEVEL1_THRESHOLD = level1Threshold;
             Data.Config.ALERT_LEVEL2_THRESHOLD = level2Threshold;
             Data.Config.ALERT_LEVEL3_THRESHOLD = level3Threshold;
+            Data.Config.DEFAULT_EXPORT_FILENAME = txtDefaultExportFilename.getText();
             Data.Config.writeConfig();
 
             settingGUI.mainGUI.onConfigChange();

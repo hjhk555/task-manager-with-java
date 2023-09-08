@@ -35,7 +35,7 @@ public class Data {
         public static final ObservableList<Integer> hourList = FXCollections.observableArrayList(IntStream.range(0, 24).boxed().collect(Collectors.toList()));
         public static final ObservableList<Integer> minuteList = FXCollections.observableArrayList(IntStream.range(0, 60).boxed().collect(Collectors.toList()));
         public static final FileChooser.ExtensionFilter defaultFilter = new FileChooser.ExtensionFilter("全部文件", "*.*");
-        public static final FileChooser.ExtensionFilter taskListFilter = new FileChooser.ExtensionFilter("任务文件", "*.tlist");
+        public static final FileChooser.ExtensionFilter taskListFilter = new FileChooser.ExtensionFilter("任务文件", "*"+ Tasks.taskFileSuffix);
         public static final File userDesktop = new File(System.getProperty("user.home"), "/Desktop");
         public static final File appRoot = new File(".");
     }
@@ -51,6 +51,7 @@ public class Data {
         public static int ALERT_LEVEL1_THRESHOLD;   // days
         public static int ALERT_LEVEL2_THRESHOLD;   // days
         public static int ALERT_LEVEL3_THRESHOLD;   // days
+        public static String DEFAULT_EXPORT_FILENAME;
 
         static {
             readConfig();
@@ -66,6 +67,7 @@ public class Data {
             ALERT_LEVEL1_THRESHOLD = config.getIntOrDefault("alert_level1_threshold", 7);
             ALERT_LEVEL2_THRESHOLD = config.getIntOrDefault("alert_level2_threshold", 3);
             ALERT_LEVEL3_THRESHOLD = config.getIntOrDefault("alert_level3_threshold", 1);
+            DEFAULT_EXPORT_FILENAME = config.getStringOrDefault("default_export_filename", Tasks.taskFilePrimaryName);
         }
         
         public static void writeConfig(){
@@ -77,13 +79,16 @@ public class Data {
             config.setInt("alert_level1_threshold", ALERT_LEVEL1_THRESHOLD);
             config.setInt("alert_level2_threshold", ALERT_LEVEL2_THRESHOLD);
             config.setInt("alert_level3_threshold", ALERT_LEVEL3_THRESHOLD);
+            config.setString("default_export_filename", DEFAULT_EXPORT_FILENAME);
             config.write();
         }
     }
 
     public static class Tasks {
         public static ArrayList<Task> taskList;
-        public static String taskFileName = "tasks.tlist";
+        public static String taskFilePrimaryName = "tasks";
+        public static String taskFileSuffix = ".tlist";
+        public static String taskFileName = taskFilePrimaryName + taskFileSuffix;
 
         static {
             taskList = readTasksFromFile(taskFileName);
