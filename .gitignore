@@ -43,3 +43,4 @@ build/
 app.lock
 settings.conf
 tasks.list
+*.tlist
