@@ -106,7 +106,7 @@ public class MainControl {
 
     public void menuReadTlist_clicked(ActionEvent actionEvent) {
         FileChooser readFileChooser = new FileChooser();
-        readFileChooser.setInitialDirectory(new File("."));
+        readFileChooser.setInitialDirectory(Data.Constants.userDesktop);
         readFileChooser.getExtensionFilters().addAll(Data.Constants.taskListFilter, Data.Constants.defaultFilter);
         File readFile = readFileChooser.showOpenDialog(mainGUI.mainScene.getWindow());
         if (readFile != null) new TlistGUI(readFile).start(mainGUI);
@@ -114,7 +114,8 @@ public class MainControl {
 
     public void menuWriteTlist_clicked(ActionEvent actionEvent) {
         FileChooser writeFileChooser = new FileChooser();
-        writeFileChooser.setInitialDirectory(new File("."));
+        writeFileChooser.setInitialDirectory(Data.Constants.userDesktop);
+        writeFileChooser.setInitialFileName(Data.Tasks.taskFileName);
         writeFileChooser.getExtensionFilters().addAll(Data.Constants.taskListFilter, Data.Constants.defaultFilter);
         File writeFile = writeFileChooser.showSaveDialog(mainGUI.mainScene.getWindow());
         if (writeFile != null) Data.Tasks.writeTasksToFile(writeFile.getPath());

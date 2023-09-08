@@ -36,6 +36,7 @@ public class Data {
         public static final ObservableList<Integer> minuteList = FXCollections.observableArrayList(IntStream.range(0, 60).boxed().collect(Collectors.toList()));
         public static final FileChooser.ExtensionFilter defaultFilter = new FileChooser.ExtensionFilter("全部文件", "*.*");
         public static final FileChooser.ExtensionFilter taskListFilter = new FileChooser.ExtensionFilter("任务文件", "*.tlist");
+        public static final File userDesktop = new File(System.getProperty("user.home"), "/Desktop");
     }
 
     public static class Config{
