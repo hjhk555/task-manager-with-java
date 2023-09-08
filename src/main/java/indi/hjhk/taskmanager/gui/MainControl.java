@@ -106,7 +106,7 @@ public class MainControl {
 
     public void menuReadTlist_clicked(ActionEvent actionEvent) {
         FileChooser readFileChooser = new FileChooser();
-        readFileChooser.setInitialDirectory(Data.Constants.userDesktop);
+        readFileChooser.setInitialDirectory(Data.Constants.appRoot);
         readFileChooser.getExtensionFilters().addAll(Data.Constants.taskListFilter, Data.Constants.defaultFilter);
         File readFile = readFileChooser.showOpenDialog(mainGUI.mainScene.getWindow());
         if (readFile != null) new TlistGUI(readFile).start(mainGUI);
