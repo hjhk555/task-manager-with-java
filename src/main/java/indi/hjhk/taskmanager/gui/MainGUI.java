@@ -16,12 +16,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Objects;
 
-public class MainGUI extends Application {
+public class MainGUI extends Application implements taskListGUI {
     private static final GlobalLock APP_LOCK = new GlobalLock("app");
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
@@ -95,6 +93,11 @@ public class MainGUI extends Application {
         updateActiveMsg();
         updateTaskMsg(emergeTaskList);
         updateUI();
+    }
+
+    @Override
+    public Scene getScene() {
+        return mainScene;
     }
 
     private void updateUI(){
@@ -227,7 +230,7 @@ public class MainGUI extends Application {
     public void updateSelectedTask(){
         int selectedTaskId = controller.getSelectedTaskId();
         if (selectedTaskId < 0) return;
-        new TaskGUI(selectedTaskId, TaskGUI.WindowType.UPDATE).start(this);
+        new TaskGUI(Data.Tasks.getIdentifiedTask(selectedTaskId), TaskGUI.WindowType.UPDATE).start(this);
     }
 
     @Override

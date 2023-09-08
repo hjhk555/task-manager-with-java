@@ -21,7 +21,6 @@ public class SettingControl {
     public void init(SettingGUI settingGUI){
         this.settingGUI = settingGUI;
 
-
         txtAlertInterval.setTextFormatter(new TextFormatter<>(MathUtils.integerFilter));
         txtActiveThreshold.setTextFormatter(new TextFormatter<>(MathUtils.integerFilter));
         txtLeaveThreshold.setTextFormatter(new TextFormatter<>(MathUtils.integerFilter));

@@ -1,20 +1,21 @@
 package indi.hjhk.taskmanager.gui;
 
-import indi.hjhk.taskmanager.Data;
-import indi.hjhk.taskmanager.IdentifiedString;
-import indi.hjhk.taskmanager.RepeatTask;
-import indi.hjhk.taskmanager.Task;
+import indi.hjhk.taskmanager.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class MainControl {
     public MenuItem menuUndo;
     public MenuItem menuRedo;
+    public MenuItem menuReadTlist;
+    public MenuItem menuWriteTlist;
     private MainGUI mainGUI;
     public Button btnPause;
     public Label lblActiveMsg;
@@ -39,7 +40,7 @@ public class MainControl {
         if (selectedTaskId < 0) return;
         if (mouseEvent.getButton() == MouseButton.PRIMARY){
             if (mouseEvent.getClickCount() == 2)
-                new TaskGUI(selectedTaskId, TaskGUI.WindowType.VIEW).start(mainGUI);
+                new TaskGUI(Data.Tasks.getIdentifiedTask(selectedTaskId), TaskGUI.WindowType.VIEW).start(mainGUI);
         }else if (mouseEvent.getButton() == MouseButton.SECONDARY){
             boolean showDoneMenu;
             Task selectedTask = Data.Tasks.taskList.get(selectedTaskId);
@@ -82,7 +83,7 @@ public class MainControl {
     }
 
     public void menuNewTask_clicked(ActionEvent actionEvent) {
-        new TaskGUI(-1, TaskGUI.WindowType.CREATE).start(mainGUI);
+        new TaskGUI(null, TaskGUI.WindowType.CREATE).start(mainGUI);
     }
 
     public void menuUndo_clicked(ActionEvent actionEvent) {
@@ -101,5 +102,21 @@ public class MainControl {
         infoAlert.setTitle("关于");
         Data.Alert.setAlertConcurrent(infoAlert);
         infoAlert.show();
+    }
+
+    public void menuReadTlist_clicked(ActionEvent actionEvent) {
+        FileChooser readFileChooser = new FileChooser();
+        readFileChooser.setInitialDirectory(new File("."));
+        readFileChooser.getExtensionFilters().addAll(Data.Constants.taskListFilter, Data.Constants.defaultFilter);
+        File readFile = readFileChooser.showOpenDialog(mainGUI.mainScene.getWindow());
+        if (readFile != null) new TlistGUI(readFile).start(mainGUI);
+    }
+
+    public void menuWriteTlist_clicked(ActionEvent actionEvent) {
+        FileChooser writeFileChooser = new FileChooser();
+        writeFileChooser.setInitialDirectory(new File("."));
+        writeFileChooser.getExtensionFilters().addAll(Data.Constants.taskListFilter, Data.Constants.defaultFilter);
+        File writeFile = writeFileChooser.showSaveDialog(mainGUI.mainScene.getWindow());
+        if (writeFile != null) Data.Tasks.writeTasksToFile(writeFile.getPath());
     }
 }

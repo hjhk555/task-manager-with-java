@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -19,8 +20,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Data {
-    public static String appVersion = "1.1.1";
-    public static String appPubDate = "2023/8/29";
+    public static String appVersion = "1.2.0";
+    public static String appPubDate = "2023/9/8";
     public static String appInfo = "制作人：黄嘉铧\n版本："+appVersion+"\n发行日期："+appPubDate;
     public static LocalDateTime curTime = getCurrentTimeToMinute();
 
@@ -33,6 +34,8 @@ public class Data {
         public static final ObservableList<String> dayOfWeekName = FXCollections.observableArrayList("星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日");
         public static final ObservableList<Integer> hourList = FXCollections.observableArrayList(IntStream.range(0, 24).boxed().collect(Collectors.toList()));
         public static final ObservableList<Integer> minuteList = FXCollections.observableArrayList(IntStream.range(0, 60).boxed().collect(Collectors.toList()));
+        public static final FileChooser.ExtensionFilter defaultFilter = new FileChooser.ExtensionFilter("全部文件", "*.*");
+        public static final FileChooser.ExtensionFilter taskListFilter = new FileChooser.ExtensionFilter("任务文件", "*.tlist");
     }
 
     public static class Config{
@@ -78,7 +81,7 @@ public class Data {
 
     public static class Tasks {
         public static ArrayList<Task> taskList;
-        public static String taskFileName = "tasks.list";
+        public static String taskFileName = "tasks.tlist";
 
         static {
             taskList = readTasksFromFile(taskFileName);
@@ -132,6 +135,12 @@ public class Data {
                 objectOutputStream.close();
             } catch (IOException ignored) {
             }
+        }
+
+        public static IdentifiedTask getIdentifiedTask(int id){
+            Task task = taskList.get(id);
+            if (task == null) return null;
+            return new IdentifiedTask(id, task);
         }
 
         public static ObservableList<IdentifiedString> getSortedTaskInfo(List<Task> taskList){

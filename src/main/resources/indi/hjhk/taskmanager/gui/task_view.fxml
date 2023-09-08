@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="487.0" prefWidth="361.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="indi.hjhk.taskmanager.gui.TaskControl">
+<BorderPane prefHeight="487.0" prefWidth="361.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="indi.hjhk.taskmanager.gui.TaskControl">
    <center>
       <AnchorPane prefHeight="239.0" prefWidth="313.0">
          <children>

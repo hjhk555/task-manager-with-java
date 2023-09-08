@@ -1,6 +1,7 @@
 package indi.hjhk.taskmanager.gui;
 
 import indi.hjhk.taskmanager.Data;
+import indi.hjhk.taskmanager.IdentifiedTask;
 import indi.hjhk.taskmanager.NormalTask;
 import indi.hjhk.taskmanager.Task;
 import javafx.fxml.FXMLLoader;
@@ -9,7 +10,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 public class TaskGUI{
     public enum WindowType{
@@ -18,23 +18,23 @@ public class TaskGUI{
         VIEW
     }
     private final WindowType windowType;
-    private final int taskId;
+    private final IdentifiedTask idTask;
     private TaskControl controller;
-    public MainGUI mainGUI;
+    public taskListGUI taskListGUI;
     public Scene taskScene;
 
-    public TaskGUI(int taskId, WindowType windowType) {
-        this.taskId = taskId;
+    public TaskGUI(IdentifiedTask idTask, WindowType windowType) {
+        this.idTask = idTask;
         this.windowType = windowType;
     }
 
-    public void start(MainGUI mainGUI){
-        this.mainGUI = mainGUI;
+    public void start(taskListGUI taskListGUI){
+        this.taskListGUI = taskListGUI;
 
         Stage stage = new Stage();
         stage.getIcons().add(MainGUI.appIcon);
         stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(mainGUI.mainScene.getWindow());
+        stage.initOwner(taskListGUI.getScene().getWindow());
 
         FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("task_view.fxml"));
         try {
@@ -55,11 +55,11 @@ public class TaskGUI{
             case VIEW -> {
                 stage.setTitle("查看任务");
                 controller.setReadOnly(true);
-                controller.showTaskOnPane(Data.Tasks.taskList.get(taskId));
+                controller.showTaskOnPane(idTask.task);
             }
             case UPDATE -> {
                 stage.setTitle("修改任务");
-                controller.showTaskOnPane(Data.Tasks.taskList.get(taskId));
+                controller.showTaskOnPane(idTask.task);
             }
         }
 
@@ -74,11 +74,11 @@ public class TaskGUI{
         switch (windowType){
             case CREATE -> {
                 Data.Tasks.addTask(newTask);
-                mainGUI.updateAll();
+                taskListGUI.updateAll();
             }
             case UPDATE -> {
-                Data.Tasks.updateTask(taskId, newTask);
-                mainGUI.updateAll();
+                Data.Tasks.updateTask(idTask.id, newTask);
+                taskListGUI.updateAll();
             }
         }
     }
