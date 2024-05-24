@@ -2,10 +2,11 @@ package indi.hjhk.taskmanager;
 
 import indi.hjhk.global.GlobalConfig;
 import indi.hjhk.taskmanager.gui.MainGUI;
+import indi.hjhk.taskmanager.task.IdentifiedTask;
+import indi.hjhk.taskmanager.task.RepeatTask;
+import indi.hjhk.taskmanager.task.Task;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
-import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -20,10 +21,18 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Data {
-    public static String appVersion = "1.2.0";
-    public static String appPubDate = "2023/9/8";
-    public static String appInfo = "制作人：黄嘉铧\n版本："+appVersion+"\n发行日期："+appPubDate;
-    public static LocalDateTime curTime = getCurrentTimeToMinute();
+    public static String appVersion = "1.3.0";
+    public static String appPubDate = "2024/5/24";
+    public static String authIdentifier = "github.com/hjhk555";
+    public static String appInfo = "制作人："+authIdentifier+"\n版本："+appVersion+"\n发行日期："+appPubDate;
+    private static LocalDateTime curTime = getCurrentTimeToMinute();
+    public static synchronized void updateCurrentTime(){
+        curTime = getCurrentTimeToMinute();
+    }
+
+    public static synchronized LocalDateTime getCurrentTime(){
+        return curTime;
+    }
 
     public static LocalDateTime getCurrentTimeToMinute(){
         LocalDateTime curTime = LocalDateTime.now();
@@ -32,8 +41,9 @@ public class Data {
 
     public static class Constants{
         public static final ObservableList<String> dayOfWeekName = FXCollections.observableArrayList("星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日");
-        public static final ObservableList<Integer> hourList = FXCollections.observableArrayList(IntStream.range(0, 24).boxed().collect(Collectors.toList()));
-        public static final ObservableList<Integer> minuteList = FXCollections.observableArrayList(IntStream.range(0, 60).boxed().collect(Collectors.toList()));
+        public static final ObservableList<String> hourList = FXCollections.observableArrayList(IntStream.range(0, 24).mapToObj(num -> String.format("%02d", num)).collect(Collectors.toList()));
+        public static final ObservableList<String> minuteList = FXCollections.observableArrayList(IntStream.range(0, 60).mapToObj(num -> String.format("%02d", num)).collect(Collectors.toList()));
+        public static final ObservableList<String> dayOfMonthList = FXCollections.observableArrayList(IntStream.range(1, 32).mapToObj(String::valueOf).collect(Collectors.toList()));
         public static final FileChooser.ExtensionFilter defaultFilter = new FileChooser.ExtensionFilter("全部文件", "*.*");
         public static final FileChooser.ExtensionFilter taskListFilter = new FileChooser.ExtensionFilter("任务文件", "*"+ Tasks.taskFileSuffix);
         public static final File userDesktop = new File(System.getProperty("user.home"), "/Desktop");
@@ -174,10 +184,10 @@ public class Data {
             for (Task task : taskList){
                 if (task == null || task.isDone()) continue;
                 LocalDateTime expiredDate = task.getExpireDate();
-                if (!expiredDate.isAfter(curTime)){
+                if (!expiredDate.isAfter(getCurrentTime())){
                     emergeTaskList.exceedTasks.add(task);
                     if (task.isAlerted) emergeTaskList.requireAlert = true;
-                }else if (!(task instanceof RepeatTask) && Duration.between(curTime, expiredDate).toDays() < Config.ALERT_LEVEL2_THRESHOLD)
+                }else if (!(task instanceof RepeatTask) && Duration.between(getCurrentTime(), expiredDate).toDays() < Config.ALERT_LEVEL2_THRESHOLD)
                     emergeTaskList.emergeTasks.add(task);
             }
             return emergeTaskList;
@@ -197,8 +207,8 @@ public class Data {
         public static ActiveStatus activeStatus;
 
         static {
-            activeStartTime = curTime;
-            leaveStartTime = curTime;
+            activeStartTime = getCurrentTime();
+            leaveStartTime = getCurrentTime();
             activeStatus = ActiveStatus.LEFT;
         }
 
@@ -207,7 +217,7 @@ public class Data {
             int diffY = preCursorY - curY;
             if (diffX < -Config.CURSOR_DIFF || diffY < -Config.CURSOR_DIFF || diffX > Config.CURSOR_DIFF || diffY > Config.CURSOR_DIFF){
                 // active
-                leaveStartTime = curTime;
+                leaveStartTime = getCurrentTime();
                 switch (activeStatus){
                     case LEAVING -> {
                         activeStatus = ActiveStatus.ACTIVE;
@@ -215,7 +225,7 @@ public class Data {
                     }
                     case LEFT -> {
                         activeStatus = ActiveStatus.ACTIVE;
-                        activeStartTime = curTime;
+                        activeStartTime = getCurrentTime();
                         app.updateActiveMsg();
                     }
                 }
@@ -223,13 +233,13 @@ public class Data {
                 // leave
                 switch (activeStatus){
                     case ACTIVE -> {
-                        if (Duration.between(leaveStartTime, curTime).toMinutes() > 0){
+                        if (Duration.between(leaveStartTime, getCurrentTime()).toMinutes() > 0){
                             activeStatus = ActiveStatus.LEAVING;
                             app.updateActiveMsg();
                         }
                     }
                     case LEAVING -> {
-                        if (Duration.between(leaveStartTime, curTime).toMinutes() >= Config.LEAVE_THRESHOLD){
+                        if (Duration.between(leaveStartTime, getCurrentTime()).toMinutes() >= Config.LEAVE_THRESHOLD){
                             activeStatus = ActiveStatus.LEFT;
                             app.updateActiveMsg();
                         }
@@ -242,7 +252,7 @@ public class Data {
 
         public static long getActiveMinutes(){
             if (activeStatus != ActiveStatus.ACTIVE) return 0L;
-            return Duration.between(activeStartTime, curTime).toMinutes();
+            return Duration.between(activeStartTime, getCurrentTime()).toMinutes();
         }
     }
 
@@ -299,7 +309,7 @@ public class Data {
         }
 
         public static long getPauseMinutesLeft(){
-            return Config.PAUSE_LENGTH - Duration.between(pauseStart, curTime).toMinutes();
+            return Config.PAUSE_LENGTH - Duration.between(pauseStart, getCurrentTime()).toMinutes();
         }
 
         public static void setAlertAlwaysOnTop(javafx.scene.control.Alert alert){

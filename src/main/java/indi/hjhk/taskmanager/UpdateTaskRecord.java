@@ -1,5 +1,7 @@
 package indi.hjhk.taskmanager;
 
+import indi.hjhk.taskmanager.task.Task;
+
 public class UpdateTaskRecord extends ActionRecord{
     private final Task oldTask;
     private final Task newTask;

@@ -2,7 +2,8 @@ package indi.hjhk.taskmanager.gui;
 
 import indi.hjhk.taskmanager.Data;
 import indi.hjhk.taskmanager.IdentifiedString;
-import indi.hjhk.taskmanager.Task;
+import indi.hjhk.taskmanager.gui.control.TlistControl;
+import indi.hjhk.taskmanager.task.Task;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

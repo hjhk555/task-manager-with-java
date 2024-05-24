@@ -1,8 +1,9 @@
-package indi.hjhk.taskmanager.gui;
+package indi.hjhk.taskmanager.gui.control;
 
 import indi.hjhk.taskmanager.AlertMsgException;
 import indi.hjhk.taskmanager.Data;
 import indi.hjhk.taskmanager.MathUtils;
+import indi.hjhk.taskmanager.gui.SettingGUI;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;

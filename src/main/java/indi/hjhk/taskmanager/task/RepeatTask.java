@@ -1,4 +1,6 @@
-package indi.hjhk.taskmanager;
+package indi.hjhk.taskmanager.task;
+
+import indi.hjhk.taskmanager.Data;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -6,7 +8,7 @@ import java.io.ObjectOutput;
 import java.time.LocalDateTime;
 
 public abstract class RepeatTask extends Task{
-    public LocalDateTime doneTime = Data.curTime;
+    public LocalDateTime doneTime = Data.getCurrentTime();
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
@@ -20,9 +22,15 @@ public abstract class RepeatTask extends Task{
         doneTime = (LocalDateTime) in.readObject();
     }
 
+    public String getNextReadyTag(){
+        LocalDateTime nextReadyTime = getExpireDate();
+        if (!Data.getCurrentTime().isBefore(nextReadyTime)) return "";
+        return String.format("(%d月%d日)", nextReadyTime.getMonthValue(), nextReadyTime.getDayOfMonth());
+    }
+
     @Override
     public String getCompletionTag() {
-        return !Data.curTime.isBefore(getExpireDate()) ? "[✘未完成]" : "[\uD83D\uDD04已完成]";
+        return !Data.getCurrentTime().isBefore(getExpireDate()) ? "[✘未完成]" : "[\uD83D\uDD04已完成]";
     }
 
     @Override
@@ -35,5 +43,10 @@ public abstract class RepeatTask extends Task{
     @Override
     public void finish() {
         doneTime = Data.getCurrentTimeToMinute();;
+    }
+
+    @Override
+    public boolean isDone() {
+        return false;
     }
 }

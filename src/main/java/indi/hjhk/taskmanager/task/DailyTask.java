@@ -1,4 +1,4 @@
-package indi.hjhk.taskmanager;
+package indi.hjhk.taskmanager.task;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -14,13 +14,8 @@ public class DailyTask extends RepeatTask{
     public LocalTime repeatTime;
 
     @Override
-    public boolean isDone() {
-        return false;
-    }
-
-    @Override
     public String getExpireDateTag() {
-        return String.format("[每天%s更新]", TIME_FORMATTER.format(repeatTime));
+        return String.format("[每天%s%s更新]", getNextReadyTag(), TIME_FORMATTER.format(repeatTime));
     }
 
     @Override

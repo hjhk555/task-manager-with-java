@@ -1,9 +1,10 @@
 package indi.hjhk.taskmanager.gui;
 
 import indi.hjhk.taskmanager.Data;
-import indi.hjhk.taskmanager.IdentifiedTask;
-import indi.hjhk.taskmanager.NormalTask;
-import indi.hjhk.taskmanager.Task;
+import indi.hjhk.taskmanager.gui.control.TaskControl;
+import indi.hjhk.taskmanager.task.IdentifiedTask;
+import indi.hjhk.taskmanager.task.NormalTask;
+import indi.hjhk.taskmanager.task.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Modality;

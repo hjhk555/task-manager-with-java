@@ -1,4 +1,4 @@
-package indi.hjhk.taskmanager;
+package indi.hjhk.taskmanager.task;
 
 import java.util.Comparator;
 

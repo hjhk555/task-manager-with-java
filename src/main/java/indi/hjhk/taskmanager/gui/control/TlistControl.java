@@ -1,8 +1,9 @@
-package indi.hjhk.taskmanager.gui;
+package indi.hjhk.taskmanager.gui.control;
 
-import indi.hjhk.taskmanager.Data;
 import indi.hjhk.taskmanager.IdentifiedString;
-import indi.hjhk.taskmanager.IdentifiedTask;
+import indi.hjhk.taskmanager.gui.TaskGUI;
+import indi.hjhk.taskmanager.gui.TlistGUI;
+import indi.hjhk.taskmanager.task.IdentifiedTask;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

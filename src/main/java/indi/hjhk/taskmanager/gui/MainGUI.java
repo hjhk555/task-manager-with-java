@@ -2,7 +2,8 @@ package indi.hjhk.taskmanager.gui;
 
 import indi.hjhk.global.GlobalLock;
 import indi.hjhk.taskmanager.Data;
-import indi.hjhk.taskmanager.Task;
+import indi.hjhk.taskmanager.gui.control.MainControl;
+import indi.hjhk.taskmanager.task.Task;
 import indi.hjhk.taskmanager.TimedTrigger;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -84,9 +85,9 @@ public class MainGUI extends Application implements taskListGUI {
     }
 
     public void updateAll(){
-        Data.curTime = Data.getCurrentTimeToMinute();
-        System.out.println("Data.curTime update to "+Data.curTime);
-        controller.lblCurTime.setText(DATE_FORMAT.format(Data.curTime));
+        Data.updateCurrentTime();
+        System.out.println("Data.curTime update to "+Data.getCurrentTime());
+        controller.lblCurTime.setText(DATE_FORMAT.format(Data.getCurrentTime()));
         controller.lstTasks.setItems(Data.Tasks.getSortedTaskInfo(Data.Tasks.taskList));
         Data.Tasks.EmergeTaskList emergeTaskList = Data.Tasks.getEmergeTaskList();
         checkAndPerformAlert(emergeTaskList);
@@ -117,12 +118,12 @@ public class MainGUI extends Application implements taskListGUI {
                                 activeMinutes >= Data.Config.ACTIVE_THRESHOLD;
         boolean requireAlert = activeExceed || emergeTaskList.requireAlert;
         if (requireAlert){
-            long alertInterval = Duration.between(Data.Alert.lastAlert, Data.curTime).toMinutes();
+            long alertInterval = Duration.between(Data.Alert.lastAlert, Data.getCurrentTime()).toMinutes();
             System.out.println("alertInterval: "+alertInterval);
             if (!Data.Alert.isAlertActive || alertInterval >= Data.Config.ALERT_INTERVAL){
                 // trigger alert
                 if (!Data.Alert.isAlertActive){
-                    Data.Alert.alertStart = Data.curTime;
+                    Data.Alert.alertStart = Data.getCurrentTime();
                     Data.Alert.isAlertActive = true;
                 }
                 StringBuilder stringBuilder = new StringBuilder();
@@ -146,13 +147,13 @@ public class MainGUI extends Application implements taskListGUI {
                 newAlert.setTitle("警报");
                 newAlert.setHeaderText(String.format("来自任务管理器的警报\n\t%s ~ %s",
                         TIME_FORMAT.format(Data.Alert.alertStart),
-                        TIME_FORMAT.format(Data.curTime)));
+                        TIME_FORMAT.format(Data.getCurrentTime())));
                 Data.Alert.setAlertAlwaysOnTop(newAlert);
                 Data.Alert.setAlertConcurrent(newAlert);
                 newAlert.show();
 
                 Data.Alert.curAlert = newAlert;
-                Data.Alert.lastAlert = Data.curTime;
+                Data.Alert.lastAlert = Data.getCurrentTime();
                 System.out.println("alert shown");
             }
         }else{
@@ -173,7 +174,7 @@ public class MainGUI extends Application implements taskListGUI {
             }
             case LEAVING -> {
                 controller.lblActiveMsg.setTextFill(Color.OLIVE);
-                controller.lblActiveMsg.setText(String.format("已离开计算机%d分钟", Duration.between(Data.Active.leaveStartTime, Data.curTime).toMinutes()));
+                controller.lblActiveMsg.setText(String.format("已离开计算机%d分钟", Duration.between(Data.Active.leaveStartTime, Data.getCurrentTime()).toMinutes()));
             }
             case ACTIVE -> {
                 long activeMinutes = Data.Active.getActiveMinutes();

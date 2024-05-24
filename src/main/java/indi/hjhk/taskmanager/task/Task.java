@@ -1,5 +1,7 @@
-package indi.hjhk.taskmanager;
+package indi.hjhk.taskmanager.task;
 
+import indi.hjhk.taskmanager.Data;
+import indi.hjhk.taskmanager.MathUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -35,8 +37,8 @@ public abstract class Task{
     };
 
     protected static String getEmergeTag(LocalDateTime expireDate){
-        if (!expireDate.isAfter(Data.curTime)) return "⚠⚠⚠";
-        long daysLeft = Duration.between(Data.curTime, expireDate).toDays();
+        if (!expireDate.isAfter(Data.getCurrentTime())) return "⚠⚠⚠";
+        long daysLeft = Duration.between(Data.getCurrentTime(), expireDate).toDays();
         if (daysLeft < Data.Config.ALERT_LEVEL3_THRESHOLD) return "★★★";
         if (daysLeft < Data.Config.ALERT_LEVEL2_THRESHOLD) return "★★";
         if (daysLeft < Data.Config.ALERT_LEVEL1_THRESHOLD) return "★";
@@ -49,6 +51,7 @@ public abstract class Task{
         taskTypeList.add(UnlimitedTask.TASK_TYPE_SEQ, UnlimitedTask.TASK_TYPE_NAME);
         taskTypeList.add(DailyTask.TASK_TYPE_SEQ, DailyTask.TASK_TYPE_NAME);
         taskTypeList.add(WeeklyTask.TASK_TYPE_SEQ, WeeklyTask.TASK_TYPE_NAME);
+        taskTypeList.add(MonthlyTask.TASK_TYPE_SEQ, MonthlyTask.TASK_TYPE_NAME);
         return taskTypeList;
     }
 
@@ -58,6 +61,7 @@ public abstract class Task{
             case UnlimitedTask.TASK_TYPE_SEQ -> new UnlimitedTask();
             case DailyTask.TASK_TYPE_SEQ -> new DailyTask();
             case WeeklyTask.TASK_TYPE_SEQ -> new WeeklyTask();
+            case MonthlyTask.TASK_TYPE_SEQ -> new MonthlyTask();
             default -> null;
         };
     }
@@ -102,7 +106,16 @@ public abstract class Task{
         stringBuilder.append(title);
         return stringBuilder.toString();
     }
+
+    /**
+     * 将任务更新为完成状态
+     */
     public abstract void finish();
+
+    /**
+     * 由于可重复任务不会永久完成，因此返回false
+     * @return 该任务是否永久完成
+     */
     public abstract boolean isDone();
     public abstract String getCompletionTag();
     public abstract String getExpireDateTag();

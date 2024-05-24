@@ -1,11 +1,10 @@
 package indi.hjhk.taskmanager.gui;
 
-import indi.hjhk.taskmanager.Task;
+import indi.hjhk.taskmanager.gui.control.SettingControl;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import java.io.IOException;
 

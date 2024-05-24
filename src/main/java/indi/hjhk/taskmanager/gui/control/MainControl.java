@@ -1,6 +1,9 @@
-package indi.hjhk.taskmanager.gui;
+package indi.hjhk.taskmanager.gui.control;
 
 import indi.hjhk.taskmanager.*;
+import indi.hjhk.taskmanager.gui.*;
+import indi.hjhk.taskmanager.task.RepeatTask;
+import indi.hjhk.taskmanager.task.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -9,7 +12,6 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 public class MainControl {
     public MenuItem menuUndo;
@@ -45,7 +47,7 @@ public class MainControl {
             boolean showDoneMenu;
             Task selectedTask = Data.Tasks.taskList.get(selectedTaskId);
             if (selectedTask instanceof RepeatTask){
-                showDoneMenu = !Data.curTime.isBefore(selectedTask.getExpireDate());
+                showDoneMenu = !Data.getCurrentTime().isBefore(selectedTask.getExpireDate());
             }else{
                 showDoneMenu = !selectedTask.isDone();
             }
@@ -63,7 +65,7 @@ public class MainControl {
         if (!Data.Alert.pauseAlert){
             Data.Alert.closeAlert();
             Data.Alert.pauseAlert = true;
-            Data.Alert.pauseStart = Data.curTime;
+            Data.Alert.pauseStart = Data.getCurrentTime();
             btnPause.setText("恢复警报");
             System.out.println("alert paused");
         }else{
@@ -106,7 +108,7 @@ public class MainControl {
 
     public void menuReadTlist_clicked(ActionEvent actionEvent) {
         FileChooser readFileChooser = new FileChooser();
-        readFileChooser.setInitialDirectory(Data.Constants.appRoot);
+        readFileChooser.setInitialDirectory(Data.Constants.userDesktop);
         readFileChooser.getExtensionFilters().addAll(Data.Constants.taskListFilter, Data.Constants.defaultFilter);
         File readFile = readFileChooser.showOpenDialog(mainGUI.mainScene.getWindow());
         if (readFile != null) new TlistGUI(readFile).start(mainGUI);
